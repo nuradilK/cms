@@ -11,7 +11,11 @@ def info(request, contest_id = 1):
 	contest = get_object_or_404(Contest, pk=contest_id)
 	if not contest.is_active:
 		raise Http404("Contest is not active!")
-	return render(request, 'contests/info.html', {'contest': contest})
+	context = {
+		'contest': contest,
+		'username': request.user.username,
+	}
+	return render(request, 'contests/info.html', context)
 def login_page(request):
 	if request.user.is_authenticated:
 		return redirect('contest-info')
@@ -32,7 +36,7 @@ def user(request):
 		login(request, user)
 		return redirect('contest-info')
 	else:
-		return HttpResponseRedirect('/login/')
+		return redirect('login-page')
 def logout_page(request):
     logout(request)
-    return HttpResponseRedirect('/login/')
+    return redirect('login-page')
