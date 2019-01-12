@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ statement.result.russian.name }}</title>
+</head>
+<body>
+    <h1>{{ statement.result.russian.name }}</h1>
+    <p>формат ввода {{ info.result.inputFile }}</p>
+    <p>формат вывода {{ info.result.outputFile }}</p>
+    <p>ограничение по времени на тест: {{ info.result.timeLimit }} мс</p>
+    <p>ограничение по памяти на тест: {{ info.result.memoryLimit }} мб</p>
+    <p>{{ statement.result.russian.legend }}</p>
+    <b>Входные данные</b>
+    <p>{{ statement.result.russian.input }}</p>
+    <b>Выходные данные</b>
+    <p>{{ statement.result.russian.output }}</p>
+    <b>Примечание</b>
+    <p>{{ statement.result.russian.notes }}</p>
+</body>
+</html>
