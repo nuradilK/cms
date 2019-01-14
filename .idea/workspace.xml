@@ -4,7 +4,7 @@
     <list default="true" id="c0b3d9b7-c8fe-4f76-8435-af1cf66bc3b4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problem/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/problem/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contest/templates/problem/problem.html" beforeDir="false" afterPath="$PROJECT_DIR$/contest/templates/problem/problem.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/problem/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/problem/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/problem/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/problem/views.py" afterDir="false" />
     </list>
@@ -59,50 +59,72 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="gitignore" value="1" />
-          <entry key="html" value="4" />
-          <entry key="py" value="21" />
+          <entry key="gitignore" value="2" />
+          <entry key="html" value="5" />
+          <entry key="py" value="22" />
           <entry key="txt" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="HTML" value="4" />
-          <entry key="PLAIN_TEXT" value="3" />
-          <entry key="Python" value="21" />
+          <entry key="HTML" value="5" />
+          <entry key="PLAIN_TEXT" value="4" />
+          <entry key="Python" value="22" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="gitignore" value="9" />
-          <entry key="html" value="965" />
-          <entry key="py" value="3365" />
+          <entry key="gitignore" value="12" />
+          <entry key="html" value="994" />
+          <entry key="py" value="3463" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="HTML" value="965" />
-          <entry key="PLAIN_TEXT" value="9" />
-          <entry key="Python" value="3365" />
+          <entry key="HTML" value="994" />
+          <entry key="PLAIN_TEXT" value="12" />
+          <entry key="Python" value="3463" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/problem/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="331">
-              <caret line="24" column="47" selection-start-line="24" selection-start-column="47" selection-end-line="24" selection-end-column="47" />
+            <state relative-caret-position="600">
+              <caret line="40" column="69" selection-start-line="40" selection-start-column="69" selection-end-line="40" selection-end-column="69" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
-                <marker date="1547472084619" expanded="true" signature="155:157" ph="..." />
-                <marker date="1547472084619" expanded="true" signature="638:714" ph="..." />
-                <marker date="1547472084619" expanded="true" signature="768:769" ph="..." />
-                <marker date="1547472084619" expanded="true" signature="799:1275" ph="..." />
-                <marker date="1547472084619" expanded="true" signature="1357:1358" ph="..." />
+                <marker date="1547478674405" expanded="true" signature="155:157" ph="..." />
+                <marker date="1547478674405" expanded="true" signature="638:714" ph="..." />
+                <marker date="1547478674405" expanded="true" signature="768:769" ph="..." />
+                <marker date="1547478674405" expanded="true" signature="799:1278" ph="..." />
+                <marker date="1547478674405" expanded="true" signature="1360:1361" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/problem/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="50" selection-start-line="5" selection-start-column="50" selection-end-line="5" selection-end-column="50" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+                <marker date="1547478880819" expanded="true" signature="157:161" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/contest/templates/problem/problem.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="15" column="26" lean-forward="true" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -132,13 +154,13 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/mycms/urls.py" />
-        <option value="$PROJECT_DIR$/contest/templates/problem/problem.html" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/mycms/settings.py" />
         <option value="$PROJECT_DIR$/problem/apps.py" />
-        <option value="$PROJECT_DIR$/problem/views.py" />
         <option value="$PROJECT_DIR$/problem/admin.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/problem/models.py" />
+        <option value="$PROJECT_DIR$/problem/views.py" />
+        <option value="$PROJECT_DIR$/contest/templates/problem/problem.html" />
       </list>
     </option>
   </component>
@@ -275,7 +297,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.32891566" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32891566" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32891566" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -310,22 +332,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/contest/templates/problem/problem.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="19" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/problem/tests.py">
       <provider selected="true" editor-type-id="text-editor" />
@@ -341,17 +349,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/problem/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="30" lean-forward="true" selection-start-line="3" selection-start-column="30" selection-end-line="3" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-            <marker date="1547468787484" expanded="true" signature="96:100" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -372,18 +369,43 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="6" lean-forward="true" selection-start-column="6" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/problem/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="331">
-          <caret line="24" column="47" selection-start-line="24" selection-start-column="47" selection-end-line="24" selection-end-column="47" />
+        <state relative-caret-position="600">
+          <caret line="40" column="69" selection-start-line="40" selection-start-column="69" selection-end-line="40" selection-end-column="69" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
-            <marker date="1547472084619" expanded="true" signature="155:157" ph="..." />
-            <marker date="1547472084619" expanded="true" signature="638:714" ph="..." />
-            <marker date="1547472084619" expanded="true" signature="768:769" ph="..." />
-            <marker date="1547472084619" expanded="true" signature="799:1275" ph="..." />
-            <marker date="1547472084619" expanded="true" signature="1357:1358" ph="..." />
+            <marker date="1547478674405" expanded="true" signature="155:157" ph="..." />
+            <marker date="1547478674405" expanded="true" signature="638:714" ph="..." />
+            <marker date="1547478674405" expanded="true" signature="768:769" ph="..." />
+            <marker date="1547478674405" expanded="true" signature="799:1278" ph="..." />
+            <marker date="1547478674405" expanded="true" signature="1360:1361" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/problem/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="50" selection-start-line="5" selection-start-column="50" selection-end-line="5" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+            <marker date="1547478880819" expanded="true" signature="157:161" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/contest/templates/problem/problem.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="26" lean-forward="true" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="26" />
         </state>
       </provider>
     </entry>

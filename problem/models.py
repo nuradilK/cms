@@ -38,7 +38,7 @@ class Statement(models.Model):
     input_file = models.CharField(max_length=100)
     output_file = models.CharField(max_length=100)
 
-    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    problem = models.OneToOneField(Problem, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.name)
