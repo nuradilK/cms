@@ -20,36 +20,27 @@ def info(request, contest_id = 1):
 
 def login_page(request):
 	context = {}
-	if 'auth_error' in request.session:
-		context['auth_msg'] = request.session['auth_error']
-		del request.session['auth_error']
-	else:
+	if request.user.is_authenticated:
+		return redirect('contest-info')
+	if request.method == 'POST':
+		if not 'username' in request.POST:
+			context['auth_msg'] = 'Do not have a username'
+		elif not 'password' in request.POST:
+			context['auth_msg'] = 'Do not have a password'
+		else:
+			username = request.POST['username']
+			password = request.POST['password']
+			user = authenticate(username=username, password=password)
+			if user is not None:
+				login(request, user)
+				return redirect('contest-info')
+			else:
+				context['auth_msg'] = 'Wrong credentials'
+	if not 'auth_msg' in context:
 		context['auth_msg'] = 'Enter your username and password'
 	if request.user.is_authenticated:
 		return redirect('contest-info')
 	return render(request, 'login.html', context)
-
-def user(request):
-	if request.user.is_authenticated:
-		return redirect('contest-info')
-	if request.method != 'POST':
-		request.session['auth_error'] = 'Wrong method to log in'
-		return redirect('login-page')
-	if not 'username' in request.POST:
-		request.session['auth_error'] = 'Do not have a username'
-		return redirect('login-page')
-	if not 'password' in request.POST:
-		request.session['auth_error'] = 'Do not have a password'
-		return redirect('login-page')
-	username = request.POST['username']
-	password = request.POST['password']
-	user = authenticate(username=username, password=password)
-	if user is not None:
-		login(request, user)
-		return redirect('contest-info')
-	else:
-		request.session['auth_error'] = 'Wrong credentials'
-		return redirect('login-page')
 
 @login_required(redirect_field_name='login-page')
 def logout_page(request):
