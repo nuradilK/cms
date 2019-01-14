@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import problem
+from .models import Problem
 
 def problem_page(request, pk):
-    return render(request, 'problem/problem.html', problem.objects.filter(problem_id=pk).first().getData())
+    return render(request, 'problem/problem.html', Problem.objects.filter(problem_id=pk).first().getData())
