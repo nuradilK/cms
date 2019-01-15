@@ -15,6 +15,9 @@
     <p>{{ statement.input }}</p>
     <b>Выходные данные</b>
     <p>{{ statement.output }}</p>
+    {% for i in samples %}
+        <p>{{ i.input }}</p>
+    {% endfor %}
     <b>Примечание</b>
     <p>{{ statement.notes }}</p>
 </body>

@@ -2,7 +2,42 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c0b3d9b7-c8fe-4f76-8435-af1cf66bc3b4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contest/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/contest/migrations/0002_contest_is_active.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/contest/templates/problem/problem.html" beforeDir="false" afterPath="$PROJECT_DIR$/contest/templates/problem/problem.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/problem/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0002_auto_20190110_1400.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0003_problem_testset.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0004_auto_20190114_1800.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0005_auto_20190114_1835.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0006_test_problem.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0007_auto_20190114_1843.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0008_auto_20190114_1844.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0009_auto_20190114_1852.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0010_auto_20190114_1904.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0011_auto_20190114_1910.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0012_auto_20190114_1913.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0013_auto_20190114_1919.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0014_auto_20190114_1919.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0015_auto_20190114_1921.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0016_auto_20190114_1922.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0017_auto_20190114_1922.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0018_auto_20190114_1922.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0019_auto_20190114_2112.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0020_auto_20190114_2125.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0021_auto_20190114_2125.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0022_auto_20190114_2133.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0023_auto_20190114_2140.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0024_auto_20190114_2140.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0025_auto_20190114_2226.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0026_auto_20190114_2226.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0027_auto_20190114_2239.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0028_auto_20190114_2241.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0029_auto_20190114_2242.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0030_auto_20190114_2243.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/problem/migrations/0031_auto_20190114_2244.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/problem/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/problem/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/problem/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/problem/views.py" afterDir="false" />
     </list>
@@ -49,55 +84,56 @@
     <session id="-1129764527">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="2" />
           <entry key="project.open.time.0" value="1" />
+          <entry key="project.open.time.8" value="1" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="gitignore" value="2" />
-          <entry key="html" value="5" />
-          <entry key="py" value="22" />
+          <entry key="html" value="6" />
+          <entry key="py" value="28" />
           <entry key="txt" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="HTML" value="5" />
+          <entry key="HTML" value="6" />
           <entry key="PLAIN_TEXT" value="4" />
-          <entry key="Python" value="22" />
+          <entry key="Python" value="28" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="12" />
-          <entry key="html" value="1002" />
-          <entry key="py" value="3479" />
+          <entry key="html" value="1063" />
+          <entry key="py" value="3959" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="HTML" value="1002" />
+          <entry key="HTML" value="1063" />
           <entry key="PLAIN_TEXT" value="12" />
-          <entry key="Python" value="3479" />
+          <entry key="Python" value="3959" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/problem/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="35" column="38" selection-start-line="35" selection-start-column="38" selection-end-line="35" selection-end-column="38" />
+            <state relative-caret-position="900">
+              <caret line="60" lean-forward="true" selection-start-line="60" selection-end-line="60" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
-                <marker date="1547484234021" expanded="true" signature="155:157" ph="..." />
-                <marker date="1547484234021" expanded="true" signature="1272:1275" ph="..." />
-                <marker date="1547484234021" expanded="true" signature="1357:1358" ph="..." />
+                <marker date="1547550854728" expanded="true" signature="155:157" ph="..." />
+                <marker date="1547550854728" expanded="true" signature="1347:1350" ph="..." />
+                <marker date="1547550854728" expanded="true" signature="1432:1433" ph="..." />
               </folding>
             </state>
           </provider>
@@ -106,21 +142,22 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/problem/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="72" selection-start-line="4" selection-start-column="72" selection-end-line="4" selection-end-column="72" />
+            <state relative-caret-position="90">
+              <caret line="6" column="56" lean-forward="true" selection-start-line="6" selection-start-column="56" selection-end-line="6" selection-end-column="56" />
               <folding>
-                <element signature="e#0#35#0" expanded="true" />
-                <marker date="1547484379194" expanded="true" signature="169:173" ph="..." />
+                <element signature="e#0#54#0" expanded="true" />
+                <marker date="1547543877594" expanded="true" signature="114:119" ph="..." />
+                <marker date="1547543877594" expanded="true" signature="262:266" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/contest/templates/problem/problem.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="42" selection-start-line="9" selection-start-column="42" selection-end-line="9" selection-end-column="42" />
+            <state relative-caret-position="270">
+              <caret line="18" column="21" selection-start-line="18" selection-start-column="21" selection-end-line="18" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -152,11 +189,11 @@
         <option value="$PROJECT_DIR$/mycms/urls.py" />
         <option value="$PROJECT_DIR$/mycms/settings.py" />
         <option value="$PROJECT_DIR$/problem/apps.py" />
-        <option value="$PROJECT_DIR$/problem/admin.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/problem/models.py" />
-        <option value="$PROJECT_DIR$/problem/views.py" />
         <option value="$PROJECT_DIR$/contest/templates/problem/problem.html" />
+        <option value="$PROJECT_DIR$/problem/admin.py" />
+        <option value="$PROJECT_DIR$/problem/views.py" />
+        <option value="$PROJECT_DIR$/problem/models.py" />
       </list>
     </option>
   </component>
@@ -191,6 +228,12 @@
               <item name="cms" type="b2602c69:ProjectViewProjectNode" />
               <item name="cms" type="462c0819:PsiDirectoryNode" />
               <item name="contest" type="462c0819:PsiDirectoryNode" />
+              <item name="migrations" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cms" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cms" type="462c0819:PsiDirectoryNode" />
+              <item name="contest" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -209,6 +252,12 @@
               <item name="cms" type="b2602c69:ProjectViewProjectNode" />
               <item name="cms" type="462c0819:PsiDirectoryNode" />
               <item name="problem" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cms" type="b2602c69:ProjectViewProjectNode" />
+              <item name="cms" type="462c0819:PsiDirectoryNode" />
+              <item name="problem" type="462c0819:PsiDirectoryNode" />
+              <item name="migrations" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -277,9 +326,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25679544" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -293,7 +341,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.32891566" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32891566" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -355,16 +403,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/problem/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="31" selection-start-line="5" selection-start-column="31" selection-end-line="5" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -372,34 +410,57 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/problem/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="35" column="38" selection-start-line="35" selection-start-column="38" selection-end-line="35" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-            <marker date="1547484234021" expanded="true" signature="155:157" ph="..." />
-            <marker date="1547484234021" expanded="true" signature="1272:1275" ph="..." />
-            <marker date="1547484234021" expanded="true" signature="1357:1358" ph="..." />
-          </folding>
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/manage.py">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/problem/views.py">
+    <entry file="file://$PROJECT_DIR$/problem/migrations/0051_auto_20190115_1507.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/problem/migrations/0050_auto_20190115_1507.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/problem/migrations/0001_initial.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/problem/admin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="72" selection-start-line="4" selection-start-column="72" selection-end-line="4" selection-end-column="72" />
+        <state relative-caret-position="75">
+          <caret line="5" column="32" lean-forward="true" selection-start-line="5" selection-start-column="32" selection-end-line="6" selection-end-column="37" />
           <folding>
-            <element signature="e#0#35#0" expanded="true" />
-            <marker date="1547484379194" expanded="true" signature="169:173" ph="..." />
+            <element signature="e#0#32#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/contest/templates/problem/problem.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="42" selection-start-line="9" selection-start-column="42" selection-end-line="9" selection-end-column="42" />
+        <state relative-caret-position="270">
+          <caret line="18" column="21" selection-start-line="18" selection-start-column="21" selection-end-line="18" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/problem/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="56" lean-forward="true" selection-start-line="6" selection-start-column="56" selection-end-line="6" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#54#0" expanded="true" />
+            <marker date="1547543877594" expanded="true" signature="114:119" ph="..." />
+            <marker date="1547543877594" expanded="true" signature="262:266" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/problem/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="900">
+          <caret line="60" lean-forward="true" selection-start-line="60" selection-end-line="60" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+            <marker date="1547550854728" expanded="true" signature="155:157" ph="..." />
+            <marker date="1547550854728" expanded="true" signature="1347:1350" ph="..." />
+            <marker date="1547550854728" expanded="true" signature="1432:1433" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>

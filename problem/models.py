@@ -18,6 +18,7 @@ class Problem(models.Model):
 class Test(models.Model):
     input = models.TextField()
     test_id = models.IntegerField()
+    in_statement = models.BooleanField(default=False)
 
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
 
@@ -38,7 +39,7 @@ class Statement(models.Model):
     input_file = models.CharField(max_length=100)
     output_file = models.CharField(max_length=100)
 
-    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    problem = models.OneToOneField(Problem, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
         return str(self.name)
@@ -48,43 +49,31 @@ class Statement(models.Model):
 def adding_tests(sender, instance, **kwargs):
     api_url = "https://polygon.codeforces.com/api/"
     method = 'problem.statements'
+    Time = str(int(time.time()))
     params = {
         'apiKey': instance.key,
-        'time': str(int(time.time())),
+        'time': Time,
         'apiSig': '654321' + hashlib.sha512(str(
-            '654321/problem.statements?apiKey=' + instance.key + '&problemId=' + str(instance.problem_id) + '&time=' + str(
-                int(time.time())) + '#' + instance.secret).encode('utf-8')).hexdigest(),
+            '654321/problem.statements?apiKey=' + instance.key + '&problemId=' + str(instance.problem_id) + '&time=' + Time + '#' + instance.secret).encode('utf-8')).hexdigest(),
         'problemId': instance.problem_id,
     }
     statement = requests.get(api_url + method, params).json()
 
     method = 'problem.info'
-    params = {
-        'apiKey': instance.key,
-        'time': str(int(time.time())),
-        'apiSig': '123456' + hashlib.sha512(str(
-            '123456/problem.info?apiKey=' + instance.key + '&problemId=' + str(instance.problem_id) + '&time=' + str(
-                int(time.time())) + '#' + instance.secret).encode('utf-8')).hexdigest(),
-        'problemId': instance.problem_id,
-    }
+    params['apiSig'] = '123456' + hashlib.sha512(str(
+            '123456/problem.info?apiKey=' + instance.key + '&problemId=' + str(instance.problem_id) + '&time=' + Time + '#' + instance.secret).encode('utf-8')).hexdigest();
     info = requests.get(api_url + method, params).json()
 
     method = 'problem.tests'
-    params = {
-        'apiKey': instance.key,
-        'time': str(int(time.time())),
-        'apiSig': 'ajkoi4' + hashlib.sha512(str(
-            'ajkoi4/problem.tests?apiKey=' + instance.key + '&problemId=' + str(instance.problem_id) + '&testset=' + instance.testset_name + '&time=' + str(
-                int(time.time())) + '#' + instance.secret).encode('utf-8')).hexdigest(),
-        'problemId': instance.problem_id,
-        'testset': instance.testset_name,
-    }
+    params['apiSig'] = 'ajkoi4' + hashlib.sha512(str(
+            'ajkoi4/problem.tests?apiKey=' + instance.key + '&problemId=' + str(instance.problem_id) + '&testset=' + instance.testset_name + '&time=' + Time + '#' + instance.secret).encode('utf-8')).hexdigest()
+    params['testset'] = instance.testset_name
     tests = requests.get(api_url + method, params).json()
 
     for i in tests['result']:
-        instance.test_set.create(input=i['input'], test_id=i['index'])
+        instance.test_set.create(input=i['input'], test_id=i['index'], in_statement=i['useInStatements'])
 
-    instance.statement_set.create(legend=statement['result']['russian']['legend'],
+    instance.statement = Statement.objects.create(legend=statement['result']['russian']['legend'],
                                   input=statement['result']['russian']['input'],
                                   output=statement['result']['russian']['output'],
                                   notes=statement['result']['russian']['notes'],
