@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c0b3d9b7-c8fe-4f76-8435-af1cf66bc3b4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problem/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/problem/models.py" afterDir="false" />
-    </list>
+    <list default="true" id="c0b3d9b7-c8fe-4f76-8435-af1cf66bc3b4" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,8 +48,8 @@
           <entry key="project.closed" value="3" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.8" value="1" />
-          <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="3" />
+          <entry key="project.open.time.9" value="2" />
+          <entry key="project.opened" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -93,7 +89,7 @@
         <entry file="file://$PROJECT_DIR$/problem/models.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="435">
-              <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
                 <marker date="1547633579920" expanded="true" signature="155:157" ph="..." />
@@ -116,8 +112,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/problem/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="56" lean-forward="true" selection-start-line="6" selection-start-column="56" selection-end-line="6" selection-end-column="56" />
+            <state relative-caret-position="75">
+              <caret line="6" column="56" selection-start-line="6" selection-start-column="56" selection-end-line="6" selection-end-column="56" />
               <folding>
                 <element signature="e#0#54#0" expanded="true" />
                 <marker date="1547543877594" expanded="true" signature="114:119" ph="..." />
@@ -187,6 +183,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -238,7 +235,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -301,8 +297,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25679544" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26037195" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -343,13 +340,7 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/contest/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#64#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor" />
@@ -381,12 +372,8 @@
     <entry file="file://$PROJECT_DIR$/manage.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/problem/migrations/0051_auto_20190115_1507.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/problem/migrations/0050_auto_20190115_1507.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/problem/migrations/0051_auto_20190115_1507.py" />
+    <entry file="file://$PROJECT_DIR$/problem/migrations/0050_auto_20190115_1507.py" />
     <entry file="file://$PROJECT_DIR$/problem/migrations/0001_initial.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -394,27 +381,18 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="5" column="32" lean-forward="true" selection-start-line="5" selection-start-column="32" selection-end-line="6" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#32#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/contest/templates/problem/problem.html">
+    <entry file="file://$PROJECT_DIR$/problem/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="21" selection-start-line="18" selection-start-column="21" selection-end-line="18" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/problem/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="56" lean-forward="true" selection-start-line="6" selection-start-column="56" selection-end-line="6" selection-end-column="56" />
+        <state relative-caret-position="435">
+          <caret line="29" selection-start-line="29" selection-end-line="29" />
           <folding>
-            <element signature="e#0#54#0" expanded="true" />
-            <marker date="1547543877594" expanded="true" signature="114:119" ph="..." />
-            <marker date="1547543877594" expanded="true" signature="262:266" ph="..." />
+            <element signature="e#0#28#0" expanded="true" />
+            <marker date="1547633579920" expanded="true" signature="155:157" ph="..." />
+            <marker date="1547633579920" expanded="true" signature="1347:1350" ph="..." />
+            <marker date="1547633579920" expanded="true" signature="1449:1450" ph="..." />
           </folding>
         </state>
       </provider>
@@ -426,16 +404,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/problem/models.py">
+    <entry file="file://$PROJECT_DIR$/problem/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+        <state relative-caret-position="75">
+          <caret line="6" column="56" selection-start-line="6" selection-start-column="56" selection-end-line="6" selection-end-column="56" />
           <folding>
-            <element signature="e#0#28#0" expanded="true" />
-            <marker date="1547633579920" expanded="true" signature="155:157" ph="..." />
-            <marker date="1547633579920" expanded="true" signature="1347:1350" ph="..." />
-            <marker date="1547633579920" expanded="true" signature="1449:1450" ph="..." />
+            <element signature="e#0#54#0" expanded="true" />
+            <marker date="1547543877594" expanded="true" signature="114:119" ph="..." />
+            <marker date="1547543877594" expanded="true" signature="262:266" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/contest/templates/problem/problem.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="21" selection-start-line="18" selection-start-column="21" selection-end-line="18" selection-end-column="21" />
         </state>
       </provider>
     </entry>

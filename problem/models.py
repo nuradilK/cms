@@ -46,7 +46,7 @@ class Statement(models.Model):
 
 
 @receiver(post_save, sender=Problem)
-def creating_tests_and_statements(sender, instance, **kwargs):
+def get_problem_data(sender, instance, **kwargs):
     api_url = "https://polygon.codeforces.com/api/"
     method = 'problem.statements'
     Time = str(int(time.time()))
