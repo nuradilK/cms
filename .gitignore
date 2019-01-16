@@ -1,5 +1,5 @@
 .venv/
 db.sqlite3
 .idea/
-/.DsS_Store
+*.DS_Store/
 __pycache__/
