@@ -1,4 +1,5 @@
 from django.db import models
+from contest.models import Contest
 import requests
 import time
 import hashlib
@@ -10,7 +11,7 @@ class Problem(models.Model):
     key = models.CharField(max_length=100)
     secret = models.CharField(max_length=100)
     testset_name = models.CharField(max_length=100, default="tests")
-
+    contest_name = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True)
     def __str__(self):
         return str(self.problem_id)
 
@@ -69,9 +70,10 @@ def get_problem_data(sender, instance, **kwargs):
             'ajkoi4/problem.tests?apiKey=' + instance.key + '&problemId=' + str(instance.problem_id) + '&testset=' + instance.testset_name + '&time=' + Time + '#' + instance.secret).encode('utf-8')).hexdigest()
     params['testset'] = instance.testset_name
     tests = requests.get(api_url + method, params).json()
-
+    print(tests)
     for i in tests['result']:
-        instance.test_set.create(input=i['input'], test_id=i['index'], in_statement=i['useInStatements'])
+        if 'input' in i:
+            instance.test_set.create(input=i['input'], test_id=i['index'], in_statement=i['useInStatements'])
 
     instance.statement = Statement.objects.create(legend=statement['result']['russian']['legend'],
                                   input=statement['result']['russian']['input'],
