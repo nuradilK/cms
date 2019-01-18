@@ -20,5 +20,4 @@ from problem import views as problem_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('contest.urls')),
-    path('<int:pk>', problem_views.problem_page, name='problem-page'),
 ]

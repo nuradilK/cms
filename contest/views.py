@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import datetime
-from .models import Contest
+from .models import Contest, Participant
 
 @login_required(redirect_field_name='login-page')
 def info(request, contest_id = 1):
@@ -46,3 +46,11 @@ def login_page(request):
 def logout_page(request):
     logout(request)
     return redirect('login-page')
+
+def ranking(request, contest_id):
+	cur_contest = get_object_or_404(Contest, pk=contest_id)
+	participants = list(Participant.objects.filter(contest__title=cur_contest.title).order_by('-score'))
+	context = {
+		'participants': participants,
+	}
+	return render(request, 'contests/ranking.html', context);
