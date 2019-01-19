@@ -5,12 +5,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import datetime
 from .models import Contest, Participant
+from problem.models import Problem
 
 @login_required(redirect_field_name='login-page')
 def info(request, contest_id = 1):
+	# print(list(Contest.objects.all())[contest_id])
 	contest = get_object_or_404(Contest, pk=contest_id)
 	if not contest.is_active:
 		raise Http404("Contest is not active!")
+	if not list(Participant.objects.filter(user=request.user, contest=contest)):
+		raise Http404("Not available")
+	problems = Problem.objects.filter(contest=contest)
 	context = {
 		'contest': contest,
 		'username': request.user.username,
