@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranking</title>
+</head>
+<body>
+    <ol>
+        {% for user in participants %}
+            <li>{{user.user.username}} {{user.score}}</li>
+        {% endfor %}
+    </ol>
+</body>
+</html>
