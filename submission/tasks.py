@@ -7,17 +7,17 @@ def evaluate_submission(sub_pk):
 	
 	sub = Submission.objects.get(pk=sub_pk)
 
-	sub.status = Submission.STATUSES['COMPILING']
+	sub.status = Submission.STATUS.COMPILING
 	sub.save()
 
 	# TODO Compiling stuff
 	
-	sub.status = Submission.STATUSES['TESTING']
+	sub.status = Submission.STATUS.TESTING
 	sub.save()
 
 	# TODO Testing stuff
 	# for test in self.problem.test_set.all()
 	# 	result = sandbox.run(self.source, test.input, test.output, self.problem.time_limit, self.problem.memory_limit, self.checker)
 
-	sub.status = Submission.STATUSES['FINISHED']
+	sub.status = Submission.STATUS.FINISHED
 	sub.save()

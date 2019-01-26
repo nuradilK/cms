@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'contest.apps.ContestsConfig',
     'problem.apps.ProblemConfig',
     'submission.apps.SubmissionConfig',
+    'sandbox.apps.SandboxConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
