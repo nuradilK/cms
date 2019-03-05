@@ -7,13 +7,16 @@ from os.path import normpath
 
 
 class Sandbox:
-    ISOLATE_DIR = path_join('..', 'isolate')
+    ISOLATE_DIR = path_join('.', 'isolate')
     BOXES_DIR = 'boxes'
 
-    def run_cmd(self, cmd):
+    def run_cmd(self, cmd, with_code=False):
         cmd_list = cmd.split()
         p = subprocess.Popen(cmd_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.get_box_dir())
-        return p.communicate()
+        out, err = p.communicate()
+        if with_code:
+            return out, err, p.returncode
+        return out, err
 
     def run_isolate(self, cmd_list):
         p = subprocess.Popen(['sudo', path_join(self.ISOLATE_DIR, 'isolate')] + cmd_list,
@@ -67,7 +70,7 @@ class Sandbox:
         for name, content, file_dir in file_list:
             self.create_file(name, content, file_dir)
 
-    def create_file(self, name, content, file_dir='', is_public=1):
+    def create_file(self, name, content, file_dir='', is_public=True):
         """ Adding file to sandbox
 
             name - File name

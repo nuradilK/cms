@@ -6,18 +6,21 @@ import hashlib
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class Problem(models.Model):
     problem_id = models.IntegerField(default=0)
     key = models.CharField(max_length=100)
     secret = models.CharField(max_length=100)
     testset_name = models.CharField(max_length=100, default="tests")
     contest = models.ManyToManyField(Contest, blank=True)
+
     def __str__(self):
-        return str(self.problem_id)
+        return str(self.problem_id) + '-' + str(self.statement.name)
 
 
 class Test(models.Model):
     input = models.TextField()
+    output = models.TextField(blank=True)
     test_id = models.IntegerField()
     in_statement = models.BooleanField(default=False)
 
@@ -28,6 +31,7 @@ class Test(models.Model):
 
     class Meta:
         order_with_respect_to = 'test_id'
+
 
 class Statement(models.Model):
     legend = models.TextField()
@@ -52,58 +56,59 @@ def get_statement(params):
 
     return requests.get(api_url + method, params).json()
 
-def get_info(params, instance, Time):
+
+def get_info(params, instance, cur_time):
     api_url = "https://polygon.codeforces.com/api/"
     method = 'problem.info'
 
     params['apiSig'] = '123456' + hashlib.sha512(str(
         '123456/problem.info?apiKey=' + instance.key + '&problemId=' + str(
-            instance.problem_id) + '&time=' + Time + '#' + instance.secret).encode('utf-8')).hexdigest();
+            instance.problem_id) + '&time=' + cur_time + '#' + instance.secret).encode('utf-8')).hexdigest();
     return requests.get(api_url + method, params).json()
 
-def get_test(params, instance, Time):
+
+def get_test(params, instance, cur_time):
     api_url = "https://polygon.codeforces.com/api/"
     method = 'problem.tests'
 
-    params['apiSig'] = 'ajkoi4' + hashlib.sha512(str(
-        'ajkoi4/problem.tests?apiKey=' + instance.key + '&problemId=' + str(
-            instance.problem_id) + '&testset=' + instance.testset_name + '&time=' + Time + '#' + instance.secret).encode(
-        'utf-8')).hexdigest()
+    params['apiSig'] = 'ajkoi4' + \
+                       hashlib.sha512(str('ajkoi4/problem.tests?apiKey=' + instance.key + '&problemId=' +
+                                          str(instance.problem_id) + '&testset=' + instance.testset_name + '&time=' +
+                                          cur_time + '#' + instance.secret).encode('utf-8')).hexdigest()
     params['testset'] = instance.testset_name
     return requests.get(api_url + method, params).json()
 
+
 @receiver(post_save, sender=Problem)
 def get_problem_data(sender, instance, created, **kwargs):
-    Time = str(int(time.time()))
+    cur_time = str(int(time.time()))
     params = {
         'apiKey': instance.key,
-        'time': Time,
+        'time': cur_time,
         'apiSig': '654321' + hashlib.sha512(str(
             '654321/problem.statements?apiKey=' + instance.key + '&problemId=' + str(
-                instance.problem_id) + '&time=' + Time + '#' + instance.secret).encode('utf-8')).hexdigest(),
+                instance.problem_id) + '&time=' + cur_time + '#' + instance.secret).encode('utf-8')).hexdigest(),
         'problemId': instance.problem_id,
     }
 
-    statement = get_statement (params)
-    info = get_info(params, instance, Time)
-    tests = get_test(params, instance, Time)
+    statement = get_statement(params)
+    info = get_info(params, instance, cur_time)
+    tests = get_test(params, instance, cur_time)
 
-
-    # print(tests)
     for i in tests['result']:
         if 'input' in i:
             cur_test = Test(input=i['input'], test_id=i['index'], in_statement=i['useInStatements'])
-            if not cur_test in list(Test.objects.all()):
+            if cur_test not in list(Test.objects.all()):
                 instance.test_set.create(input=i['input'], test_id=i['index'], in_statement=i['useInStatements'])
 
     cur_statement = Statement(legend=statement['result']['russian']['legend'],
-                                  input=statement['result']['russian']['input'],
-                                  output=statement['result']['russian']['output'],
-                                  notes=statement['result']['russian']['notes'],
-                                  name=statement['result']['russian']['name'], time_limit=info['result']['timeLimit'],
-                                  memory_limit=info['result']['memoryLimit'],
-                                  input_file=info['result']['inputFile'], output_file=info['result']['outputFile'])
-    print(cur_statement)
-    if created == False:
+                              input=statement['result']['russian']['input'],
+                              output=statement['result']['russian']['output'],
+                              notes=statement['result']['russian']['notes'],
+                              name=statement['result']['russian']['name'], time_limit=info['result']['timeLimit'],
+                              memory_limit=info['result']['memoryLimit'], 
+                              input_file=info['result']['inputFile'], output_file=info['result']['outputFile'])
+    
+    if created is False:
         Statement.objects.get(name=instance.statement.name).delete()
     instance.statement = cur_statement.save()

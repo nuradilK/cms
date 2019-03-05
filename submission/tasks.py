@@ -28,11 +28,11 @@ def run_solution(sandbox, name, problem_info, test):
     sandbox.create_file(str(problem_info.output_file), '', file_dir='box')
     sandbox.run_exec(name, dirs=[('/box', 'box', 'rw')], meta_file=sandbox.get_box_dir('meta'),
                      stdin_file=str(problem_info.input_file), stdout_file=str(problem_info.output_file),
-                     time_limit=problem_info.time_limit, memory_limit=problem_info.memory_limit)
+                     time_limit=problem_info.time_limit + 1, memory_limit=problem_info.memory_limit)
 
 
 @shared_task
-def evaluate_submission(sub_pk, invocation=0):
+def evaluate_submission(sub_pk):
     """ Evaluate or re-evaluate submission """
 
     sub = Submission.objects.get(pk=sub_pk)
@@ -54,18 +54,20 @@ def evaluate_submission(sub_pk, invocation=0):
     sub.status = Submission.STATUS.TESTING
     sub.save()
 
-    with open(path_join('.', 'submission', 'static', 'submission', 'testlib.h'), 'r') as testlib_file:
-        testlib = testlib_file.read()
+    if not sub.is_invocation:
+        # TODO properly access static files
+        with open(path_join('.', 'submission', 'static', 'submission', 'testlib.h'), 'r') as testlib_file:
+            testlib = testlib_file.read()
+        # TODO properly access static files
+        with open(path_join('.', 'submission', 'static', 'submission', 'check.cpp'), 'r') as f:
+            checker = f.read()
 
-    with open(path_join('.', 'submission', 'static', 'submission', 'check.cpp'), 'r') as f:
-        checker = f.read()
-
-    sandbox.create_file('testlib.h', str(testlib), is_public=0)
-    sandbox.create_file('check.cpp', str(checker), is_public=0)
-    sandbox.run_cmd('g++ -o check -std=c++11 -DONLINE_JUDGE check.cpp testlib.h')
+        sandbox.create_file('testlib.h', str(testlib), is_public=0)
+        sandbox.create_file('check.cpp', str(checker), is_public=0)
+        sandbox.run_cmd('g++ -o check -std=c++11 -DONLINE_JUDGE check.cpp testlib.h')
 
     problem_info = sub.problem.statement
-    for test in sub.problem.test_set.all():
+    for test in sub.problem.test_set.order_by('test_id'):
         sub.current_test = test.test_id
         sub.save()
 
@@ -80,14 +82,27 @@ def evaluate_submission(sub_pk, invocation=0):
             run_info = sub.runinfo_set.create(test=test)
 
         if 'status' not in meta:
-            run_info.status = RunInfo.STATUS.OK
-            run_info.time = float(meta['time'])
-            # ans_file = 'test.a'
-            # sandbox.create_file(ans_file, str(test.output), is_public=0)
-            # sandbox.run_cmd('./check ' +
-            #                 path_join('.', 'box', str(problem_info.input_file)) + ' ' +
-            #                 path_join('.', 'box', str(problem_info.output_file)) + ' ' +
-            #                 path_join('.', ans_file))
+            if sub.is_invocation:
+                run_info.status = RunInfo.STATUS.OK
+                run_info.time = float(meta['time'])
+                test.output = sandbox.get_file(path_join('box', problem_info.output_file))
+                test.save()
+            else:
+                ans_file = 'test.a'
+                sandbox.create_file(ans_file, str(test.output), is_public=0)
+                out, err, code = sandbox.run_cmd('./check ' +
+                                                 path_join('.', 'box', str(problem_info.input_file)) + ' ' +
+                                                 path_join('.', 'box', str(problem_info.output_file)) + ' ' +
+                                                 path_join('.', ans_file), with_code=True)
+                if code == 0:
+                    run_info.status = RunInfo.STATUS.OK
+                elif code == 1:
+                    run_info.status = RunInfo.STATUS.WA
+                elif code == 2:
+                    run_info.status = RunInfo.STATUS.PE
+                elif code == 3:
+                    run_info.status = RunInfo.STATUS.CF
+                run_info.time = float(meta['time'])
         elif meta['status'] == 'TO':
             if meta['message'] == 'Time limit exceeded':
                 run_info.status = RunInfo.STATUS.TL
@@ -97,6 +112,8 @@ def evaluate_submission(sub_pk, invocation=0):
         elif meta['status'] == 'SG' or meta['status'] == 'RE':
             run_info.status = RunInfo.STATUS.RE
             run_info.time = float(meta['time'])
+        else:
+            run_info.status = RunInfo.STATUS.XX
 
         run_info.save()
 
