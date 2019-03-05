@@ -1,0 +1,20 @@
+<h2>Submission ID: {{ sub.pk }}</h2>
+
+<h2>STATUS: {{ status }}</h2>
+
+<table>
+    <tr>
+        <th>#</th>
+        <th>Verdict</th>
+        <th>Time (ms)</th>
+    </tr>
+    {% for runinfo in runinfo_list %}
+        <tr>
+            <td>{{ runinfo.test.test_id }}</td>
+            <td>{{ runinfo.message }}</td>
+            <td>{{ runinfo.time }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<p><pre><code class>{{ sub.source }}</code></pre></p>

@@ -1,0 +1,8 @@
+time:0.003
+time-wall:0.171
+max-rss:3152
+csw-voluntary:7
+csw-forced:0
+exitsig:8
+status:SG
+message:Caught fatal signal 8

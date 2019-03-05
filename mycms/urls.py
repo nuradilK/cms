@@ -20,5 +20,5 @@ from problem import views as problem_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('contest.urls')),
-    path('submit/', include('submission.urls')),
+    path('submission/', include('submission.urls')),
 ]
