@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="07adfef5-c295-489c-8886-9dd5a49fa927" name="Default Changelist" comment="Merge branch 'master' of https://github.com/nuradilK/cms into submit&#10;&#10;# Conflicts:&#10;#&#9;.gitignore&#10;#&#9;contest/migrations/0002_contest_is_active.py&#10;#&#9;mycms/settings.py">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/isolate" beforeDir="false" afterPath="$PROJECT_DIR$/isolate" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/isolate/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/isolate/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/isolate/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/isolate/.travis.yml" afterDir="false" />
@@ -18,14 +17,8 @@
       <change beforePath="$PROJECT_DIR$/isolate/isolate.h" beforeDir="false" afterPath="$PROJECT_DIR$/isolate/isolate.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/isolate/rules.c" beforeDir="false" afterPath="$PROJECT_DIR$/isolate/rules.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/isolate/util.c" beforeDir="false" afterPath="$PROJECT_DIR$/isolate/util.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/problem/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/problem/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sandbox/sandbox_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/sandbox/sandbox_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/submission/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/submission/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/submission/static/submission/check.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/submission/static/submission/check.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/submission/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/submission/tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/submission/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/submission/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/submission/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -55,8 +48,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/submission/tasks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="30" column="58" selection-start-line="30" selection-start-column="58" selection-end-line="30" selection-end-column="58" />
+            <state relative-caret-position="195">
+              <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
               <folding>
                 <element signature="e#0#70#0" expanded="true" />
               </folding>
@@ -103,8 +96,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/submission/templates/submission/detail.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="13" column="42" selection-start-line="13" selection-start-column="42" selection-end-line="13" selection-end-column="42" />
+            <state relative-caret-position="75">
+              <caret line="5" column="8" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -198,7 +191,6 @@
         <option value="$PROJECT_DIR$/mycms/urls.py" />
         <option value="$PROJECT_DIR$/submission/templates/submission/test_submit.html" />
         <option value="$PROJECT_DIR$/submission/static/submission/testlib.h" />
-        <option value="$PROJECT_DIR$/submission/static/submission/check.cpp" />
         <option value="$PROJECT_DIR$/sandbox/meta_file_samples/runtime_error.txt" />
         <option value="$PROJECT_DIR$/sandbox/meta_file_samples/ok.txt" />
         <option value="$PROJECT_DIR$/sandbox/meta_file_samples/tl.txt" />
@@ -212,6 +204,7 @@
         <option value="$PROJECT_DIR$/problem/models.py" />
         <option value="$PROJECT_DIR$/submission/views.py" />
         <option value="$PROJECT_DIR$/submission/urls.py" />
+        <option value="$PROJECT_DIR$/submission/static/submission/check.cpp" />
         <option value="$PROJECT_DIR$/submission/tasks.py" />
       </list>
     </option>
@@ -249,6 +242,19 @@
             <path>
               <item name="MyCMS" type="b2602c69:ProjectViewProjectNode" />
               <item name="MyCMS" type="462c0819:PsiDirectoryNode" />
+              <item name="submission" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MyCMS" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MyCMS" type="462c0819:PsiDirectoryNode" />
+              <item name="submission" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="MyCMS" type="b2602c69:ProjectViewProjectNode" />
+              <item name="MyCMS" type="462c0819:PsiDirectoryNode" />
+              <item name="submission" type="462c0819:PsiDirectoryNode" />
+              <item name="static" type="462c0819:PsiDirectoryNode" />
               <item name="submission" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -332,12 +338,12 @@
       <workItem from="1551109883241" duration="6393000" />
       <workItem from="1551155088447" duration="15019000" />
       <workItem from="1551692380572" duration="14852000" />
-      <workItem from="1551759836989" duration="22215000" />
+      <workItem from="1551759836989" duration="23356000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="146953000" />
+    <option name="totallyTimeSpent" value="148094000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -532,13 +538,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/submission/static/submission/check.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="33" lean-forward="true" selection-start-line="4" selection-start-column="33" selection-end-line="4" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/isolate/isolate-check-environment">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
@@ -632,13 +631,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/submission/templates/submission/detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="13" column="42" selection-start-line="13" selection-start-column="42" selection-end-line="13" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sandbox/sandbox_manager.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
@@ -689,10 +681,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/submission/static/submission/check.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="348">
+          <caret line="122" column="1" selection-start-line="122" selection-start-column="1" selection-end-line="122" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/submission/templates/submission/detail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="8" selection-start-line="5" selection-start-column="8" selection-end-line="5" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/submission/tasks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="30" column="58" selection-start-line="30" selection-start-column="58" selection-end-line="30" selection-end-column="58" />
+        <state relative-caret-position="195">
+          <caret line="32" lean-forward="true" selection-start-line="32" selection-end-line="32" />
           <folding>
             <element signature="e#0#70#0" expanded="true" />
           </folding>

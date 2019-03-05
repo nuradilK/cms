@@ -28,7 +28,7 @@ def run_solution(sandbox, name, problem_info, test):
     sandbox.create_file(str(problem_info.output_file), '', file_dir='box')
     sandbox.run_exec(name, dirs=[('/box', 'box', 'rw')], meta_file=sandbox.get_box_dir('meta'),
                      stdin_file=str(problem_info.input_file), stdout_file=str(problem_info.output_file),
-                     time_limit=problem_info.time_limit + 1, memory_limit=problem_info.memory_limit)
+                     time_limit=problem_info.time_limit, memory_limit=problem_info.memory_limit)
 
 
 @shared_task
