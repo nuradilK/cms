@@ -5,28 +5,29 @@ import subprocess
 from os.path import join as path_join
 from os.path import normpath
 
-ISOLATE_DIR = path_join('..', 'isolate')
-BOXES_DIR = 'boxes'
 
 class Sandbox:
+    ISOLATE_DIR = path_join('..', 'isolate')
+    BOXES_DIR = 'boxes'
 
     def run_cmd(self, cmd):
         cmd_list = cmd.split()
-        p = subprocess.Popen(cmd_list, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
+        p = subprocess.Popen(cmd_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.get_box_dir())
         return p.communicate()
 
     def run_isolate(self, cmd_list):
-        p = subprocess.Popen([path_join(ISOLATE_DIR, 'isolate')] + cmd_list, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
-        return p.communicate()
+        p = subprocess.Popen(['sudo', path_join(self.ISOLATE_DIR, 'isolate')] + cmd_list,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        return out, err
 
     def init(self, box_id=0):
         """ Initialize sandbox """
 
         self.box_id = box_id
 
-        if self.run_isolate(['--init', '--box-id', str(box_id)])[0] == b'':
+        out, err = self.run_isolate(['--init', '--box-id', str(box_id)])
+        if err != b'':
             self.cleanup()
             self.box_id = box_id
             self.run_isolate(['--init', '--box-id', str(box_id)])
@@ -35,37 +36,69 @@ class Sandbox:
 
     def cleanup(self):
         """ Cleanup sandbox """
+        if self.box_id is None:
+            return
 
-        self.run_isolate(['--cleanup', '--box-id', str(self.box_id)])
-        shutil.rmtree(path_join(BOXES_DIR, str(self.box_id)))
+        # When called from __del__, running subprocess can cause troubles
+        # self.run_isolate(['--cleanup', '--box-id', str(self.box_id)])
+        os.system('sudo ' + path_join(self.ISOLATE_DIR, 'isolate') + ' --cleanup --box-id ' + str(self.box_id))
+
+        shutil.rmtree(path_join(self.BOXES_DIR, str(self.box_id)))
 
         self.box_id = None
 
     def __del__(self):
-        if self.box_id is not None:
-            self.cleanup()
+        if self.box_id is None:
+            return
+        self.cleanup()
 
     def get_box_dir(self, path=''):
-        return normpath(path_join('.', BOXES_DIR, str(self.box_id), path))
+        return normpath(path_join('.', self.BOXES_DIR, str(self.box_id), path))
+
+    def get_box_path(self, path=''):
+        return normpath(path_join(os.getcwd(), self.BOXES_DIR, str(self.box_id), path))
 
     def create_files(self, file_list):
         """ Adding files to sandbox
 
-            file_list - list of tuples (name, content):
-                name - File name
-                content - File content
+            file_list - list of tuples (name, content, file_dir):
+        """
+
+        for name, content, file_dir in file_list:
+            self.create_file(name, content, file_dir)
+
+    def create_file(self, name, content, file_dir='', is_public=1):
+        """ Adding file to sandbox
+
+            name - File name
+            content - File content
+            file_dir - File location
         """
 
         box_path = normpath(path_join(os.getcwd(), self.get_box_dir()))
+        file_dir_path = normpath(path_join(box_path, file_dir))
 
-        for name, content, file_dir in file_list:
-            file_dir_path = normpath(path_join(box_path, file_dir))
+        if not os.path.exists(file_dir_path):
+            os.makedirs(file_dir_path)
 
-            if not os.path.exists(file_dir_path):
-                os.makedirs(file_dir_path)
+        f_mode = 'w'
+        if is_public:
+            f_mode += '+'
+        with open(path_join(file_dir_path, name), f_mode) as file:
+            file.write(content)
 
-            with open(path_join(file_dir_path, name), 'w') as file:
-                file.write(content)
+        if is_public:
+            os.chmod(path_join(file_dir_path, name), 0o777)
+
+    def get_file(self, name):
+        """
+        :param name: File name
+        :return: file content
+        """
+        with open(self.get_box_dir(name), 'r') as f:
+            content = f.read()
+
+        return content
 
     def run_exec(self, exec, cmd='', time_limit=1000, memory_limit=256, extra_time=200,
             meta_file=None, stdin_file=None, stdout_file=None, stderr_file=None,
@@ -107,7 +140,8 @@ class Sandbox:
         if chdir is not None:
             cmd_list += ['--chdir=' + chdir]
         for in_dir, out_dir, options in dirs:
-            dir_bind = '--dir=' + in_dir + '=' + out_dir
+            dir_bind = '--dir=' + in_dir + '=' \
+                       + path_join(os.getcwd(), self.BOXES_DIR, str(self.box_id), out_dir)
             if options is not None:
                 dir_bind += ':' + options
             cmd_list += [dir_bind]
@@ -126,7 +160,6 @@ class Sandbox:
 
         return self.run_isolate(cmd_list)
 
-
 # TESTING:
 # sandbox = Sandbox()
 # sandbox.init()
@@ -135,24 +168,29 @@ class Sandbox:
 # input()
 #
 # sandbox.create_files([('main.cpp', """
-#
 # #include <iostream>
+#
 # using namespace std;
 #
 # int main() {
 #
-#     cout << "Hello World!" << endl;
+#     cout << "Successful run" << endl;
 #
 #     return 0;
 # }
 #
-# """, '')])
+# """, ''), ('input.txt', 'rar kek', 'box'), ('output.txt', '', 'box')])
 # input()
 #
-# sandbox.run_cmd('g++ -o ' + sandbox.get_box_dir(path_join('box', 'main')) + ' ' + sandbox.get_box_dir('main.cpp'))
+# out, err = sandbox.run_cmd('g++ -o ' + path_join('.', 'box', 'main') + ' ' + 'main.cpp')
+# if err != b'':
+#     print('Compilation Error:\n' + str(err))
+#     exit(0)
 # input()
 #
-# out, err = sandbox.run_exec("main", dirs=[('/box', path_join(os.getcwd(), BOXES_DIR, str(sandbox.box_id), 'box'), 'rw')],
-#                        meta_file=sandbox.get_box_dir('meta.txt'))
+# out, err = sandbox.run_exec("main", dirs=[('/box', 'box', 'rw')],
+#                             meta_file=sandbox.get_box_dir('meta.txt'), stdin_file='input.txt',
+#                             time_limit=1000, memory_limit=16)
 # print(str(out) + '\n\n' + str(err))
+#
 # input()

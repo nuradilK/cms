@@ -1,0 +1,8 @@
+status:TO
+message:Time limit exceeded (wall clock)
+killed:1
+time:0.000
+time-wall:3.130
+max-rss:716
+csw-voluntary:4
+csw-forced:0
