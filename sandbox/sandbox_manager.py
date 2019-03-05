@@ -7,7 +7,7 @@ from os.path import normpath
 
 
 class Sandbox:
-    ISOLATE_DIR = path_join('..', 'isolate')
+    ISOLATE_DIR = path_join('.', 'isolate')
     BOXES_DIR = 'boxes'
 
     def run_cmd(self, cmd):
@@ -163,34 +163,34 @@ class Sandbox:
 # TESTING:
 # sandbox = Sandbox()
 # sandbox.init()
-#
+
 # print(normpath(path_join(os.getcwd(), sandbox.get_box_dir())))
 # input()
-#
+
 # sandbox.create_files([('main.cpp', """
 # #include <iostream>
-#
+
 # using namespace std;
-#
+
 # int main() {
-#
+
 #     cout << "Successful run" << endl;
-#
+
 #     return 0;
 # }
-#
+
 # """, ''), ('input.txt', 'rar kek', 'box'), ('output.txt', '', 'box')])
 # input()
-#
+
 # out, err = sandbox.run_cmd('g++ -o ' + path_join('.', 'box', 'main') + ' ' + 'main.cpp')
 # if err != b'':
 #     print('Compilation Error:\n' + str(err))
 #     exit(0)
 # input()
-#
+
 # out, err = sandbox.run_exec("main", dirs=[('/box', 'box', 'rw')],
 #                             meta_file=sandbox.get_box_dir('meta.txt'), stdin_file='input.txt',
 #                             time_limit=1000, memory_limit=16)
 # print(str(out) + '\n\n' + str(err))
-#
+
 # input()
