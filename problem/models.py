@@ -8,7 +8,10 @@ import random
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+<<<<<<< HEAD
 from sandbox.sandbox_manager import Sandbox
+=======
+>>>>>>> 136ba6b603354a4e8718e5f04455a6c8adde0b81
 
 class Problem(models.Model):
     problem_id = models.IntegerField(default=0)
@@ -16,12 +19,14 @@ class Problem(models.Model):
     secret = models.CharField(max_length=100)
     testset_name = models.CharField(max_length=100, default="tests")
     contest = models.ManyToManyField(Contest, blank=True)
+
     def __str__(self):
-        return str(self.problem_id)
+        return str(self.problem_id) + '-' + str(self.statement.name)
 
 
 class Test(models.Model):
     input = models.TextField()
+    output = models.TextField(blank=True)
     test_id = models.IntegerField()
     in_statement = models.BooleanField(default=False)
 
@@ -32,6 +37,7 @@ class Test(models.Model):
 
     class Meta:
         order_with_respect_to = 'test_id'
+
 
 class Statement(models.Model):
     legend = models.TextField()
@@ -112,7 +118,7 @@ def generate_test(params, instance, Time, scriptLine):
 
 @receiver(post_save, sender=Problem)
 def get_problem_data(sender, instance, created, **kwargs):
-    Time = str(int(time.time()))
+    cur_time = str(int(time.time()))
     params = {
         'apiKey': instance.key,
         'time': Time,

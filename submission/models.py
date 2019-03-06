@@ -1,7 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
 
-from contest.models import Contest
+from contest.models import Contest, Participant
 from problem.models import Problem, Test
 
 
@@ -29,18 +28,27 @@ class Submission(models.Model):
     language = models.SmallIntegerField(default=LANGUAGE.CPP17)
     status = models.SmallIntegerField(default=STATUS.IN_QUEUE)
     current_test = models.IntegerField(default=0)
+    is_invocation = models.BooleanField(default=False)
 
     sent_date = models.DateTimeField(auto_now_add=True, null=True)
 
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True)
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return str(self.pk) + '-' + str(self.status)
 
     def message(self):
         return Submission.STATUS.DESC[self.status]
+
+    def invocation_message(self):
+        if self.status != Submission.STATUS.FINISHED:
+            return Submission.STATUS.DESC[self.status]
+        if self.runinfo_set.exclude(status=RunInfo.STATUS.OK):
+            return 'FAILED'
+        else:
+            return 'OK'
 
 
 class RunInfo(models.Model):
@@ -54,6 +62,7 @@ class RunInfo(models.Model):
         PE = 5
         NA = 6
         XX = 7
+        CF = 8
         DESC = [
             "OK",
             "Wrong answer",
@@ -63,6 +72,7 @@ class RunInfo(models.Model):
             "Presentation error",
             "N/A",
             "System error",
+            "Checker failed",
         ]
 
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
