@@ -1,3 +1,6 @@
+from django.contrib.staticfiles.templatetags.staticfiles import static
+
+import os
 from os.path import join as path_join
 
 from celery import shared_task
@@ -17,6 +20,7 @@ def get_meta(sandbox, meta_file):
         meta[key] = val
 
     return meta
+    # TODO finish get_meta
 
 
 def run_solution(sandbox, name, problem_info, test):
