@@ -90,12 +90,10 @@ def script_test(instance, scriptLine, gen_source, gen_name, test):
     sandbox.run_cmd('g++ -o ' + path_join('box', gen_name) + ' -std=c++11 -DONLINE_JUDGE ' + gen_name + '.cpp ' + 'testlib.h')
 
     # GET TEST
-    sandbox.run_exec(exec=gen_name, cmd=' '.join(scriptLine.split()[1:]), dirs=[('/box', 'box', 'rw')], meta_file=sandbox.get_box_dir('meta'),
-                     stdin_file='stdin', stdout_file='stdout',
+    out, err = sandbox.run_exec(exec=gen_name, cmd=' '.join(scriptLine.split()[1:]), dirs=[('/box', 'box', 'rw')], meta_file=sandbox.get_box_dir('meta'),
                      time_limit=10, memory_limit=128)
-    out, err = sandbox.run_cmd(path_join('.', 'box', str(scriptLine)))
-
-    instance.test_set.create(input=str(out), test_id=test['index'], in_statement=test['useInStatements'])
+    
+    instance.test_set.create(input=out.decode('utf-8'), test_id=test['index'], in_statement=test['useInStatements'])
     sandbox.cleanup()
     print(test['index'])
 
@@ -104,7 +102,6 @@ def create_tests(instance, params, Time, tests):
         if test['manual'] is True:
             manual_test(instance, test)
         else:
-            print(test)
             script_test(instance, test['scriptLine'], generator_code(params, instance, Time, test['scriptLine']), test['scriptLine'].split()[0], test)
 
 @shared_task
@@ -118,17 +115,18 @@ def proceed_problem(prob_pk):
         'problemId': instance.problem_id,
     }
     statement = get_statement(params, instance, Time)
+    print(statement)
     info = get_info(params, instance, Time)
     tests = get_test(params, instance, Time)
     create_tests(instance, params, Time, tests)
-    cur_statement = Statement(legend=statement['result']['russian']['legend'],
+    cur_statement = Statement(problem = instance, legend=statement['result']['russian']['legend'],
                                   input=statement['result']['russian']['input'],
                                   output=statement['result']['russian']['output'],
                                   notes=statement['result']['russian']['notes'],
                                   name=statement['result']['russian']['name'], time_limit=info['result']['timeLimit'],
                                   memory_limit=info['result']['memoryLimit'],
                                   input_file=info['result']['inputFile'], output_file=info['result']['outputFile'])
-    if Statement.objects.filter(name=instance.statement.name):
-        Statement.objects.get(name=instance.statement.name).delete()
-    instance.statement = cur_statement.save()
+    # if Statement.objects.filter(name=instance.statement.name):
+        # Statement.objects.get(name=instance.statement.name).delete()
+    cur_statement.save()
     print('Done')
