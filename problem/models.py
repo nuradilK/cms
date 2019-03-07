@@ -104,7 +104,6 @@ def get_info(params, instance, cur_time):
 def get_test(params, instance, cur_time):
     param_config(params)
     method = 'problem.tests'
-
     my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
                  ('testset', instance.testset_name), ('time', cur_time)]
     params['apiSig'] = api_sig(method, instance.secret, my_params)
@@ -113,26 +112,20 @@ def get_test(params, instance, cur_time):
 
 
 def get_name(params, instance, cur_time):
-    api_url = "https://polygon.codeforces.com/api/"
+    param_config(params)
     method = 'problem.checker'
-
-    params['apiSig'] = 'nuradi' + \
-                       hashlib.sha512(str('nuradi/' + method + '?apiKey=' + instance.key +
-                                          '&problemId=' + str(instance.problem_id) +
-                                          '&time=' + cur_time + '#' + instance.secret).encode('utf-8')).hexdigest()
-    del params['testset']
+    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+                 ('time', cur_time)]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
     return requests.get(api_url + method, params).json()['result']
 
 
 def get_file(params, instance, cur_time, name):
-    api_url = "https://polygon.codeforces.com/api/"
+    param_config(params)
     method = 'problem.viewFile'
-
-    params['apiSig'] = 'nuradi' + \
-                       hashlib.sha512(str('nuradi/problem.viewFile?apiKey=' + instance.key +
-                                          '&name=' + name + '&problemId=' + str(instance.problem_id) +
-                                          '&time=' + cur_time + '&type=source#' + instance.secret).encode(
-                           'utf-8')).hexdigest()
+    my_params = [('apiKey', str(instance.key)), ('name', name), ('problemId', str(instance.problem_id)),
+                 ('testset', instance.testset_name), ('time', cur_time), ('type', 'source')]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
     params['name'] = name
     params['type'] = 'source'
     return requests.get(api_url + method, params).content
