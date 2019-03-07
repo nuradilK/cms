@@ -7,6 +7,8 @@ import string
 import random
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from problem.static import codes
+from sandbox.sandbox_manager import Sandbox
 
 
 class Problem(models.Model):
@@ -15,9 +17,10 @@ class Problem(models.Model):
     secret = models.CharField(max_length=100)
     testset_name = models.CharField(max_length=100, default="tests")
     contest = models.ManyToManyField(Contest, blank=True)
+    checker = models.TextField(blank=True)
 
     def __str__(self):
-        return str(self.problem_id) + '-' + str(self.statement.name)
+        return str(self.problem_id)# + '-' + str(self.statement.name)
 
 
 class Test(models.Model):
@@ -107,6 +110,26 @@ def get_test(params, instance, cur_time):
     params['testset'] = instance.testset_name
     return requests.get(api_url + method, params).json()
 
+  
+def get_name(params, instance, cur_time):
+    param_config(params)
+    method = 'problem.checker'
+    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+                 ('time', cur_time)]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    return requests.get(api_url + method, params).json()['result']
+
+
+def get_file(params, instance, cur_time, name):
+    param_config(params)
+    method = 'problem.viewFile'
+    my_params = [('apiKey', str(instance.key)), ('name', name), ('problemId', str(instance.problem_id)),
+                 ('testset', instance.testset_name), ('time', cur_time), ('type', 'source')]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['name'] = name
+    params['type'] = 'source'
+    return requests.get(api_url + method, params).content
+
 
 def generate_test(params, instance, cur_time, script_line):
     param_config(params)
@@ -124,6 +147,7 @@ def generate_test(params, instance, cur_time, script_line):
 @receiver(post_save, sender=Problem)
 def get_problem_data(instance, created, **kwargs):
     cur_time = str(int(time.time()))
+    have = False
     params = {
         'apiKey': instance.key,
         'time': cur_time,
@@ -133,6 +157,20 @@ def get_problem_data(instance, created, **kwargs):
     statement = get_statement(params, instance, cur_time)
     info = get_info(params, instance, cur_time)
     tests = get_test(params, instance, cur_time)
+    checker_name = get_name(params, instance, cur_time)
+
+    for key in codes:
+        if key == checker_name:
+            have = True
+
+    if not have:
+        checker = get_file(params, instance, cur_time, checker_name)
+    else:
+        checker = codes[checker_name]
+
+    instance.checker = checker
+    Problem.objects.filter(problem_id=instance.problem_id).update(checker=checker)
+
     for test in tests['result']:
         if test['manual'] is True:
             instance.test_set.create(input=test['input'], test_id=test['index'], in_statement=test['useInStatements'])
@@ -147,6 +185,6 @@ def get_problem_data(instance, created, **kwargs):
                               memory_limit=info['result']['memoryLimit'],
                               input_file=info['result']['inputFile'], output_file=info['result']['outputFile'])
 
-    if created is False:
+    if not created:
         Statement.objects.get(name=instance.statement.name).delete()
     instance.statement = cur_statement.save()
