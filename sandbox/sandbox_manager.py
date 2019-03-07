@@ -30,6 +30,7 @@ class Sandbox:
         self.box_id = box_id
 
         out, err = self.run_isolate(['--init', '--box-id', str(box_id)])
+
         if err != b'':
             self.cleanup()
             self.box_id = box_id
