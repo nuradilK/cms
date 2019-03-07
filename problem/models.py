@@ -110,7 +110,7 @@ def get_test(params, instance, cur_time):
     params['testset'] = instance.testset_name
     return requests.get(api_url + method, params).json()
 
-
+  
 def get_name(params, instance, cur_time):
     param_config(params)
     method = 'problem.checker'
@@ -131,9 +131,9 @@ def get_file(params, instance, cur_time, name):
     return requests.get(api_url + method, params).content
 
 
-def generate_test(params, instance, cur_time, scriptLine):
+def generate_test(params, instance, cur_time, script_line):
     param_config(params)
-    name = scriptLine.split()[0] + '.cpp'
+    name = script_line.split()[0] + '.cpp'
     method = 'problem.viewFile'
     my_params = [('apiKey', str(instance.key)), ('name', name), ('problemId', str(instance.problem_id)),
                  ('time', cur_time), ('type', 'source')]
@@ -145,7 +145,7 @@ def generate_test(params, instance, cur_time, scriptLine):
 
 
 @receiver(post_save, sender=Problem)
-def get_problem_data(sender, instance, created, **kwargs):
+def get_problem_data(instance, created, **kwargs):
     cur_time = str(int(time.time()))
     have = False
     params = {
