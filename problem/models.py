@@ -20,7 +20,7 @@ class Problem(models.Model):
     checker = models.TextField(blank=True)
 
     def __str__(self):
-        return str(self.problem_id) + '-' + str(self.statement.name)
+        return str(self.problem_id)# + '-' + str(self.statement.name)
 
 
 class Test(models.Model):
@@ -169,6 +169,7 @@ def get_problem_data(sender, instance, created, **kwargs):
         checker = codes[checker_name]
 
     instance.checker = checker
+    Problem.objects.filter(problem_id=instance.problem_id).update(checker=checker)
 
     for test in tests['result']:
         if test['manual'] is True:
