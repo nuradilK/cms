@@ -10,6 +10,10 @@ from billiard import current_process
 from sandbox.sandbox_manager import Sandbox
 
 from .models import Statement, Test, Problem
+from .std_checkers import codes
+
+from submission.models import Submission
+from submission.tasks import evaluate_submission
 
 api_url = "https://polygon.codeforces.com/api/"
 
@@ -67,6 +71,58 @@ def get_test(params, instance, current_time):
     return requests.get(api_url + method, params).json()
 
 
+def get_name(params, instance, current_time):
+    param_config(params)
+    method = 'problem.checker'
+    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+                 ('time', current_time)]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    return requests.get(api_url + method, params).json()['result']
+
+
+def get_file(params, instance, current_time, name):
+    param_config(params)
+    method = 'problem.viewFile'
+    my_params = [('apiKey', str(instance.key)), ('name', name), ('problemId', str(instance.problem_id)),
+                 ('time', current_time), ('type', 'source')]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['name'] = name
+    params['type'] = 'source'
+    return requests.get(api_url + method, params).content.decode('utf-8')
+
+
+def get_solution_name(params, instance, current_time):
+    param_config(params)
+    method = 'problem.solutions'
+    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+                 ('time', current_time)]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
+
+    solution_list = requests.get(api_url + method, params).json()['result']
+    main_solution = None
+    correct_solution = None
+    for solution in solution_list:
+        if solution['tag'] == 'MA':
+            main_solution = solution
+        if solution['tag'] == 'OK':
+            correct_solution = solution
+
+    if main_solution is None:
+        return correct_solution['name']
+    return main_solution['name']
+
+
+def get_solution_source(params, instance, current_time, solution_name):
+    param_config(params)
+    method = 'problem.viewSolution'
+    my_params = [('apiKey', str(instance.key)), ('name', solution_name), ('problemId', str(instance.problem_id)),
+                 ('time', current_time)]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['name'] = solution_name
+
+    return requests.get(api_url + method, params).content.decode('utf-8')
+
+
 def generator_code(params, instance, current_time, script_line):
     param_config(params)
     name = script_line.split()[0] + '.cpp'
@@ -112,24 +168,66 @@ def create_tests(instance, params, current_time, tests):
         if test['manual'] is True:
             manual_test(instance, test)
         else:
-            script_test(instance, test['script_line'], generator_code(params, instance, current_time, test['script_line']),
-                        test['script_line'].split()[0], test)
+            script_test(instance, test['scriptLine'],
+                        generator_code(params, instance, current_time, test['scriptLine']),
+                        test['scriptLine'].split()[0], test)
 
 
 @shared_task
-def proceed_problem(prob_pk):
-    instance = Problem.objects.get(pk=prob_pk)
+def proceed_problem(prob_pk, created):
+    instance = None
+    # TODO Resolve 'Problem.DoesNotExist' issue
+    while instance is None:
+        try:
+            instance = Problem.objects.get(pk=prob_pk)
+        except Problem.DoesNotExist:
+            pass
+
+    if hasattr(instance, 'statement'):
+        instance.statement.delete()
+    if hasattr(instance, 'test_set'):
+        instance.test_set.all().delete()
+
     current_time = str(int(time.time()))
     params = {
         'apiKey': instance.key,
         'time': current_time,
         'problemId': instance.problem_id,
     }
-    statement = get_statement(params, instance, current_time)
+    try:
+        statement = get_statement(params, instance, current_time)
+        info = get_info(params, instance, current_time)
+        checker_name = get_name(params, instance, current_time)
+        solution_name = get_solution_name(params, instance, current_time)
+        solution = get_solution_source(params, instance, current_time, solution_name)
+        tests = get_test(params, instance, current_time)
+    except Exception as e:
+        print(e)
+        Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.FAILED)
+        return
 
-    info = get_info(params, instance, current_time)
-    tests = get_test(params, instance, current_time)
-    create_tests(instance, params, current_time, tests)
+    have = False
+    for key in codes:
+        if key == checker_name:
+            have = True
+
+    # TODO Fix for the case when custom checker has the same name as a standard one
+    if not have:
+        try:
+            checker = get_file(params, instance, current_time, checker_name)
+        except Exception as e:
+            print(e)
+            Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.FAILED)
+            return
+    else:
+        checker = codes[checker_name]
+
+    instance.checker = checker
+    Problem.objects.filter(pk=instance.pk).update(checker=checker)
+
+    instance.solution = solution
+    Problem.objects.filter(pk=instance.pk).update(solution=solution)
+
     cur_statement = Statement(problem=instance, legend=statement['result']['russian']['legend'],
                               input=statement['result']['russian']['input'],
                               output=statement['result']['russian']['output'],
@@ -138,3 +236,10 @@ def proceed_problem(prob_pk):
                               memory_limit=info['result']['memoryLimit'],
                               input_file=info['result']['inputFile'], output_file=info['result']['outputFile'])
     cur_statement.save()
+
+    create_tests(instance, params, current_time, tests)
+
+    invocation = instance.submission_set.create(source=solution, is_invocation=True)
+    evaluate_submission(invocation.pk)
+
+    Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.READY)

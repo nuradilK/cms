@@ -1,6 +1,3 @@
-from django.contrib.staticfiles.templatetags.staticfiles import static
-
-import os
 from os.path import join as path_join
 
 from celery import shared_task
@@ -58,12 +55,9 @@ def evaluate_submission(sub_pk):
         # TODO properly access static files
         with open(path_join('.', 'submission', 'static', 'submission', 'testlib.h'), 'r') as testlib_file:
             testlib = testlib_file.read()
-        # TODO properly access static files
-        with open(path_join('.', 'submission', 'static', 'submission', 'check.cpp'), 'r') as f:
-            checker = f.read()
 
         sandbox.create_file('testlib.h', str(testlib), is_public=0)
-        sandbox.create_file('check.cpp', str(checker), is_public=0)
+        sandbox.create_file('check.cpp', str(sub.problem.checker), is_public=0)
         sandbox.run_cmd('g++ -o check -std=c++11 -DONLINE_JUDGE check.cpp testlib.h')
 
     problem_info = sub.problem.statement

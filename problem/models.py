@@ -6,18 +6,39 @@ from contest.models import Contest
 
 
 class Problem(models.Model):
-    problem_id = models.IntegerField(default=0)
+    class STATUS:
+        IN_PROCESS = 0
+        READY = 1
+        FAILED = 2
+
+    problem_id = models.CharField(default='', max_length=20)
     key = models.CharField(max_length=100)
     secret = models.CharField(max_length=100)
     testset_name = models.CharField(max_length=100, default="tests")
     contest = models.ManyToManyField(Contest, blank=True)
     checker = models.TextField(blank=True)
+    solution = models.TextField(blank=True)
+    status = models.SmallIntegerField(default=STATUS.IN_PROCESS)
 
     def __str__(self):
         if hasattr(self, 'statement'):
             return str(self.problem_id) + '-' + str(self.statement.name)
         else:
             return str(self.problem_id)
+
+    def get_status_message(self):
+        if self.status == Problem.STATUS.IN_PROCESS:
+            return 'In process...'
+        if self.status == Problem.STATUS.READY:
+            return 'Ready'
+        return 'Failed'
+    get_status_message.short_description = 'Status'
+
+    def get_title(self):
+        if hasattr(self, 'statement'):
+            return str(self.statement.name)
+        return 'N/A'
+    get_title.short_description = 'Title'
 
 
 class Test(models.Model):
@@ -57,4 +78,6 @@ from .tasks import proceed_problem
 
 @receiver(post_save, sender=Problem)
 def get_problem_data(sender, instance, created, **kwargs):
-    proceed_problem.delay(prob_pk=instance.id)
+    Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.IN_PROCESS)
+    proceed_problem.delay(instance.pk, created)
+
