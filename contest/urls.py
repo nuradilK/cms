@@ -11,6 +11,4 @@ urlpatterns = [
     path('<int:contest_pk>/problem/<int:problem_pk>', problem_views.problem_page, name='problem-page'),
     path('<int:contest_pk>/submit', submission_views.submit, name='submit-page'),
     path('<int:contest_pk>/submission/<int:sub_pk>', submission_views.submission, name='submission-page'),
-    path('accounts/login/', views.login_page, name='login-page'),
-    path('logout/', views.logout_page, name='logout-page'),
 ]

@@ -126,7 +126,5 @@ def proceed_problem(prob_pk):
                                   name=statement['result']['russian']['name'], time_limit=info['result']['timeLimit'],
                                   memory_limit=info['result']['memoryLimit'],
                                   input_file=info['result']['inputFile'], output_file=info['result']['outputFile'])
-    # if Statement.objects.filter(name=instance.statement.name):
-        # Statement.objects.get(name=instance.statement.name).delete()
     cur_statement.save()
     print('Done')

@@ -2,24 +2,33 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-import datetime
+from datetime import datetime, timezone
 from .models import Contest, Participant
 
+def active(contest, cur_time):
+    if not contest.is_active:
+        return False
+    diff = cur_time - contest.start_time
+    if diff.total_seconds() <= 0:
+        return False
+    diff = contest.end_time - cur_time
+    if diff.total_seconds() <= 0:
+        return False
+    return True
 
 @login_required(redirect_field_name='login-page')
 def info(request, contest_pk=1):
     contest = get_object_or_404(Contest, pk=contest_pk)
-    if not contest.is_active:
+    if not active(contest, datetime.now(timezone.utc)):
         raise Http404("Contest is not active!")
     if not list(Participant.objects.filter(user=request.user, contest=contest)):
         return HttpResponse("You are not registered for this contest.")
     context = {
         'contest': contest,
         'username': request.user.username,
-        'current_time': datetime.datetime.now(),
+        'current_time': datetime.now(timezone.utc),
     }
     return render(request, 'contests/info.html', context)
-
 
 def login_page(request):
     context = {}
