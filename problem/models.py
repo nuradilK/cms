@@ -1,9 +1,8 @@
 from django.db import models
-from contest.models import Contest
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from problem.static import codes
-from sandbox.sandbox_manager import Sandbox
+
+from contest.models import Contest
 
 
 class Problem(models.Model):
@@ -52,10 +51,10 @@ class Statement(models.Model):
     def __str__(self):
         return str(self.name)
 
+
 from .tasks import proceed_problem
 
 
 @receiver(post_save, sender=Problem)
 def get_problem_data(sender, instance, created, **kwargs):
-    print('Getting problem...')
     proceed_problem.delay(prob_pk=instance.id)
