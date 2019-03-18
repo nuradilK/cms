@@ -51,14 +51,18 @@ def evaluate_submission(sub_pk):
     sub.status = Submission.STATUS.TESTING
     sub.save()
 
-    if not sub.is_invocation:
-        # TODO properly access static files
-        with open(path_join('.', 'submission', 'static', 'submission', 'testlib.h'), 'r') as testlib_file:
-            testlib = testlib_file.read()
+    # TODO properly access static files
+    with open(path_join('.', 'submission', 'static', 'submission', 'testlib.h'), 'r') as testlib_file:
+        testlib = testlib_file.read()
 
-        sandbox.create_file('testlib.h', str(testlib), is_public=0)
-        sandbox.create_file('check.cpp', str(sub.problem.checker), is_public=0)
-        sandbox.run_cmd('g++ -o check -std=c++11 -DONLINE_JUDGE check.cpp testlib.h')
+    sandbox.create_file('testlib.h', str(testlib), is_public=0)
+    sandbox.create_file('check.cpp', str(sub.problem.checker), is_public=0)
+    out, err = sandbox.run_cmd('g++ -o check -std=c++11 check.cpp testlib.h')
+    if err != b'':
+        print(err.decode('utf-8'))
+        sub.status = Submission.STATUS.ERROR
+        sub.save()
+        return
 
     problem_info = sub.problem.statement
     for test in sub.problem.test_set.order_by('test_id'):
