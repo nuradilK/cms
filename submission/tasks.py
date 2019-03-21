@@ -1,6 +1,3 @@
-from django.contrib.staticfiles.templatetags.staticfiles import static
-
-import os
 from os.path import join as path_join
 
 from celery import shared_task
@@ -30,7 +27,6 @@ def run_solution(sandbox, name, problem_info, test):
                      stdin_file=str(problem_info.input_file), stdout_file=str(problem_info.output_file),
                      time_limit=problem_info.time_limit, memory_limit=problem_info.memory_limit)
 
-
 @shared_task
 def evaluate_submission(sub_pk):
     """ Evaluate or re-evaluate submission """
@@ -58,13 +54,12 @@ def evaluate_submission(sub_pk):
         # TODO properly access static files
         with open(path_join('.', 'submission', 'static', 'submission', 'testlib.h'), 'r') as testlib_file:
             testlib = testlib_file.read()
-        # TODO properly access static files
-        with open(path_join('.', 'submission', 'static', 'submission', 'check.cpp'), 'r') as f:
-            checker = f.read()
 
         sandbox.create_file('testlib.h', str(testlib), is_public=0)
-        sandbox.create_file('check.cpp', str(checker), is_public=0)
-        sandbox.run_cmd('g++ -o check -std=c++11 -DONLINE_JUDGE check.cpp testlib.h')
+        sandbox.create_file('check.cpp', str(sub.problem.checker), is_public=0)
+        out, err = sandbox.run_cmd('g++ -o check -std=c++11 -DONLINE_JUDGE check.cpp testlib.h')
+        print(out)
+        print(err)
 
     problem_info = sub.problem.statement
     for test in sub.problem.test_set.order_by('test_id'):
