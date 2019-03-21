@@ -211,7 +211,7 @@ int main(int argc, char * argv[])
         quitf(_wa, "Output contains longer sequence [length = %d], but answer contains %d elements", n + extraInOufCount, n);
     
     if (n <= 5)
-        quitf(_ok, "%d number(s): \"%s\"", n, compress(firstElems).c_str());
+        quitf(_ok, "%d number(s): \\"%s\\"", n, compress(firstElems).c_str());
     else
         quitf(_ok, "%d numbers", n);
 }

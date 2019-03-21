@@ -12,7 +12,7 @@ from sandbox.sandbox_manager import Sandbox
 from .models import Statement, Test, Problem
 from .std_checkers import codes
 
-from submission.models import Submission
+from submission.models import Submission, RunInfo
 from submission.tasks import evaluate_submission
 
 api_url = "https://polygon.codeforces.com/api/"
@@ -89,6 +89,15 @@ def get_file(params, instance, current_time, name):
     params['name'] = name
     params['type'] = 'source'
     return requests.get(api_url + method, params).content.decode('utf-8')
+
+
+def get_files_list(params, instance, current_time):
+    param_config(params)
+    method = 'problem.files'
+    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+                 ('time', current_time)]
+    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    return requests.get(api_url + method, params).json()
 
 
 def get_solution_name(params, instance, current_time):
@@ -241,5 +250,10 @@ def proceed_problem(prob_pk, created):
 
     invocation = instance.submission_set.create(source=solution, is_invocation=True)
     evaluate_submission(invocation.pk)
+    invocation.refresh_from_db()
+
+    if invocation.status != Submission.STATUS.FINISHED or invocation.runinfo_set.exclude(status=RunInfo.STATUS.OK):
+        Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.FAILED)
+        return
 
     Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.READY)
