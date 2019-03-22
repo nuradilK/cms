@@ -46,4 +46,10 @@ def submission(request, contest_pk, sub_pk):
 
     runinfo_list = sub.runinfo_set.all()
 
-    return render(request, 'submission/detail.html', {'sub': sub, 'status': status, 'runinfo_list': runinfo_list})
+    context = {
+        'sub': sub, 
+        'status': status, 
+        'runinfo_list': runinfo_list
+    }
+
+    return render(request, 'submission/detail.html', context)

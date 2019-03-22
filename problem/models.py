@@ -40,13 +40,21 @@ class Problem(models.Model):
         return 'N/A'
     get_title.short_description = 'Title'
 
+class Subtask(models.Model):
+    subtask_id = models.AutoField(primary_key=True)
+    score = models.IntegerField(default=0)
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.description
 
 class Test(models.Model):
     input = models.TextField()
     output = models.TextField(blank=True)
     test_id = models.IntegerField()
     in_statement = models.BooleanField(default=False)
-
+    subtask = models.ForeignKey(Subtask, on_delete=models.CASCADE, null=True)
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -71,7 +79,6 @@ class Statement(models.Model):
 
     def __str__(self):
         return str(self.name)
-
 
 from .tasks import proceed_problem
 

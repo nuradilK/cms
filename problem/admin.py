@@ -11,3 +11,4 @@ class ProblemAdmin(admin.ModelAdmin):
 admin.site.register(models.Problem, ProblemAdmin)
 admin.site.register(models.Test)
 admin.site.register(models.Statement)
+admin.site.register(models.Subtask)

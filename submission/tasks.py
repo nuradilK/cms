@@ -64,57 +64,67 @@ def evaluate_submission(sub_pk):
         return
 
     problem_info = sub.problem.statement
-    for test in sub.problem.test_set.order_by('test_id'):
-        sub.current_test = test.test_id
-        sub.save()
+    if not sub.is_invocation:
+        participant = sub.participant
+        if participant.submission_set.filter(problem=sub.problem).order_by('-points'):
+            participant.score -= participant.submission_set.filter(problem=sub.problem).order_by('-points').first().points
+    for subtask in sub.problem.subtask_set.order_by('subtask_id'):
+        cur_score = subtask.score
+        for test in subtask.test_set.order_by('test_id'):
+            sub.current_test = test.test_id
+            sub.save()
 
-        run_solution(sandbox, 'main', problem_info, test)
+            run_solution(sandbox, 'main', problem_info, test)
 
-        meta = get_meta(sandbox, 'meta')
+            meta = get_meta(sandbox, 'meta')
 
-        run_info = sub.runinfo_set.filter(test=test)
-        if run_info:
-            run_info = run_info.first()
-        else:
-            run_info = sub.runinfo_set.create(test=test)
-
-        if 'status' not in meta:
-            if sub.is_invocation:
-                run_info.status = RunInfo.STATUS.OK
-                run_info.time = float(meta['time'])
-                test.output = sandbox.get_file(path_join('box', problem_info.output_file))
-                test.save()
+            run_info = sub.runinfo_set.filter(test=test)
+            if run_info:
+                run_info = run_info.first()
             else:
-                ans_file = 'test.a'
-                sandbox.create_file(ans_file, str(test.output), is_public=0)
-                out, err, code = sandbox.run_cmd('./check ' +
-                                                 path_join('.', 'box', str(problem_info.input_file)) + ' ' +
-                                                 path_join('.', 'box', str(problem_info.output_file)) + ' ' +
-                                                 path_join('.', ans_file), with_code=True)
-                if code == 0:
+                run_info = sub.runinfo_set.create(test=test)
+
+            if 'status' not in meta:
+                if sub.is_invocation:
                     run_info.status = RunInfo.STATUS.OK
-                elif code == 1:
-                    run_info.status = RunInfo.STATUS.WA
-                elif code == 2:
-                    run_info.status = RunInfo.STATUS.PE
-                elif code == 3:
-                    run_info.status = RunInfo.STATUS.CF
+                    run_info.time = float(meta['time'])
+                    test.output = sandbox.get_file(path_join('box', problem_info.output_file))
+                    test.save()
+                else:
+                    ans_file = 'test.a'
+                    sandbox.create_file(ans_file, str(test.output), is_public=0)
+                    out, err, code = sandbox.run_cmd('./check ' +
+                                                    path_join('.', 'box', str(problem_info.input_file)) + ' ' +
+                                                    path_join('.', 'box', str(problem_info.output_file)) + ' ' +
+                                                    path_join('.', ans_file), with_code=True)
+                    if code == 0:
+                        run_info.status = RunInfo.STATUS.OK
+                    elif code == 1:
+                        run_info.status = RunInfo.STATUS.WA
+                    elif code == 2:
+                        run_info.status = RunInfo.STATUS.PE
+                    elif code == 3:
+                        run_info.status = RunInfo.STATUS.CF
+                    run_info.time = float(meta['time'])
+            elif meta['status'] == 'TO':
+                if meta['message'] == 'Time limit exceeded':
+                    run_info.status = RunInfo.STATUS.TL
+                else:
+                    run_info.status = RunInfo.STATUS.WTL
+                run_info.time = float(problem_info.time_limit)
+            elif meta['status'] == 'SG' or meta['status'] == 'RE':
+                run_info.status = RunInfo.STATUS.RE
                 run_info.time = float(meta['time'])
-        elif meta['status'] == 'TO':
-            if meta['message'] == 'Time limit exceeded':
-                run_info.status = RunInfo.STATUS.TL
             else:
-                run_info.status = RunInfo.STATUS.WTL
-            run_info.time = float(problem_info.time_limit)
-        elif meta['status'] == 'SG' or meta['status'] == 'RE':
-            run_info.status = RunInfo.STATUS.RE
-            run_info.time = float(meta['time'])
-        else:
-            run_info.status = RunInfo.STATUS.XX
-
-        run_info.save()
-
+                run_info.status = RunInfo.STATUS.XX
+            if run_info.status != RunInfo.STATUS.OK:
+                cur_score = 0
+            run_info.save()
+        sub.points += cur_score
+        sub.save()
     sub.status = Submission.STATUS.FINISHED
     sub.save()
-
+    if not sub.is_invocation:
+        participant.score += participant.submission_set.filter(problem=sub.problem).order_by('-points').first().points
+    participant.save()
     sandbox.cleanup()

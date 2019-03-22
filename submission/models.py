@@ -29,6 +29,7 @@ class Submission(models.Model):
     status = models.SmallIntegerField(default=STATUS.IN_QUEUE)
     current_test = models.IntegerField(default=0)
     is_invocation = models.BooleanField(default=False)
+    points = models.IntegerField(default=0)
 
     sent_date = models.DateTimeField(auto_now_add=True, null=True)
 

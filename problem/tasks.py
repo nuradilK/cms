@@ -9,7 +9,7 @@ from celery import shared_task
 from billiard import current_process
 from sandbox.sandbox_manager import Sandbox
 
-from .models import Statement, Test, Problem
+from .models import Statement, Test, Problem, Subtask
 from .std_checkers import codes
 
 from submission.models import Submission, RunInfo
@@ -145,11 +145,11 @@ def generator_code(params, instance, current_time, script_line):
     return gen_code
 
 
-def manual_test(instance, test):
-    instance.test_set.create(input=test['input'], test_id=test['index'], in_statement=test['useInStatements'])
+def manual_test(instance, test, fullSubtask):
+    instance.test_set.create(input=test['input'], test_id=test['index'], in_statement=test['useInStatements'], subtask=fullSubtask)
 
 
-def script_test(instance, script_line, gen_source, gen_name, test):
+def script_test(instance, script_line, gen_source, gen_name, test, fullSubtask):
     sandbox = Sandbox()
     sandbox.init(current_process().index)
 
@@ -168,18 +168,18 @@ def script_test(instance, script_line, gen_source, gen_name, test):
                                 meta_file=sandbox.get_box_dir('meta'),
                                 time_limit=10, memory_limit=128)
 
-    instance.test_set.create(input=out.decode('utf-8'), test_id=test['index'], in_statement=test['useInStatements'])
+    instance.test_set.create(input=out.decode('utf-8'), test_id=test['index'], in_statement=test['useInStatements'], subtask=fullSubtask)
     sandbox.cleanup()
 
 
-def create_tests(instance, params, current_time, tests):
+def create_tests(instance, params, current_time, tests, fullSubtask):
     for test in tests['result']:
         if test['manual'] is True:
-            manual_test(instance, test)
+            manual_test(instance, test, fullSubtask)
         else:
             script_test(instance, test['scriptLine'],
                         generator_code(params, instance, current_time, test['scriptLine']),
-                        test['scriptLine'].split()[0], test)
+                        test['scriptLine'].split()[0], test, fullSubtask)
 
 
 @shared_task
@@ -203,6 +203,8 @@ def proceed_problem(prob_pk, created):
         'time': current_time,
         'problemId': instance.problem_id,
     }
+    fullSubtask = Subtask(problem=Problem.objects.get(pk=instance.pk), description='Full Subtask')
+    fullSubtask.save()
     try:
         statement = get_statement(params, instance, current_time)
         info = get_info(params, instance, current_time)
@@ -237,16 +239,20 @@ def proceed_problem(prob_pk, created):
     instance.solution = solution
     Problem.objects.filter(pk=instance.pk).update(solution=solution)
 
-    cur_statement = Statement(problem=instance, legend=statement['result']['russian']['legend'],
-                              input=statement['result']['russian']['input'],
-                              output=statement['result']['russian']['output'],
-                              notes=statement['result']['russian']['notes'],
-                              name=statement['result']['russian']['name'], time_limit=info['result']['timeLimit'],
+    lang = 'russian'
+    if not lang in statement['result']:
+        lang = 'english'
+
+    cur_statement = Statement(problem=instance, legend=statement['result'][lang]['legend'],
+                              input=statement['result'][lang]['input'],
+                              output=statement['result'][lang]['output'],
+                              notes=statement['result'][lang]['notes'],
+                              name=statement['result'][lang]['name'], time_limit=info['result']['timeLimit'],
                               memory_limit=info['result']['memoryLimit'],
                               input_file=info['result']['inputFile'], output_file=info['result']['outputFile'])
     cur_statement.save()
 
-    create_tests(instance, params, current_time, tests)
+    create_tests(instance, params, current_time, tests, fullSubtask)
 
     invocation = instance.submission_set.create(source=solution, is_invocation=True)
     evaluate_submission(invocation.pk)
