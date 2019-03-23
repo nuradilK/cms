@@ -46,27 +46,27 @@ def api_sig(method, secret, add):
 def get_statement(params, instance, current_time):
     param_config(params)
     method = 'problem.statements'
-    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
                  ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
-    return requests.get(api_url + method, params).json()
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
+    return requests.get(api_url + method, params).json()['result']
 
 
 def get_info(params, instance, current_time):
     param_config(params)
     method = 'problem.info'
-    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
                  ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
-    return requests.get(api_url + method, params).json()
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
+    return requests.get(api_url + method, params).json()['result']
 
 
 def get_test(params, instance, current_time):
     param_config(params)
     method = 'problem.tests'
-    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
                  ('testset', instance.testset_name), ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
     params['testset'] = instance.testset_name
     return requests.get(api_url + method, params).json()
 
@@ -74,18 +74,18 @@ def get_test(params, instance, current_time):
 def get_name(params, instance, current_time):
     param_config(params)
     method = 'problem.checker'
-    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
                  ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
     return requests.get(api_url + method, params).json()['result']
 
 
 def get_file(params, instance, current_time, name):
     param_config(params)
     method = 'problem.viewFile'
-    my_params = [('apiKey', str(instance.key)), ('name', name), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('name', name), ('problemId', str(instance.problem_id)),
                  ('time', current_time), ('type', 'source')]
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
     params['name'] = name
     params['type'] = 'source'
     return requests.get(api_url + method, params).content.decode('utf-8')
@@ -94,18 +94,18 @@ def get_file(params, instance, current_time, name):
 def get_files_list(params, instance, current_time):
     param_config(params)
     method = 'problem.files'
-    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
                  ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
     return requests.get(api_url + method, params).json()
 
 
 def get_solution_name(params, instance, current_time):
     param_config(params)
     method = 'problem.solutions'
-    my_params = [('apiKey', str(instance.key)), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
                  ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
 
     solution_list = requests.get(api_url + method, params).json()['result']
     main_solution = None
@@ -124,9 +124,9 @@ def get_solution_name(params, instance, current_time):
 def get_solution_source(params, instance, current_time, solution_name):
     param_config(params)
     method = 'problem.viewSolution'
-    my_params = [('apiKey', str(instance.key)), ('name', solution_name), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('name', solution_name), ('problemId', str(instance.problem_id)),
                  ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
     params['name'] = solution_name
 
     return requests.get(api_url + method, params).content.decode('utf-8')
@@ -136,11 +136,11 @@ def generator_code(params, instance, current_time, script_line):
     param_config(params)
     name = script_line.split()[0] + '.cpp'
     method = 'problem.viewFile'
-    my_params = [('apiKey', str(instance.key)), ('name', name), ('problemId', str(instance.problem_id)),
+    my_params = [('apiKey', str(instance.polygon_account.key)), ('name', name), ('problemId', str(instance.problem_id)),
                  ('time', current_time), ('type', 'source')]
     params['type'] = 'source'
     params['name'] = name
-    params['apiSig'] = api_sig(method, instance.secret, my_params)
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
     gen_code = requests.get(api_url + method, params).text
     return gen_code
 
@@ -183,7 +183,7 @@ def create_tests(instance, params, current_time, tests, fullSubtask):
 
 
 @shared_task
-def proceed_problem(prob_pk, created):
+def process_problem(prob_pk):
     instance = None
     # TODO Resolve 'Problem.DoesNotExist' issue
     while instance is None:
@@ -192,6 +192,8 @@ def proceed_problem(prob_pk, created):
         except Problem.DoesNotExist:
             pass
 
+    Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.IN_PROCESS)
+
     if hasattr(instance, 'statement'):
         instance.statement.delete()
     if hasattr(instance, 'test_set'):
@@ -199,7 +201,7 @@ def proceed_problem(prob_pk, created):
 
     current_time = str(int(time.time()))
     params = {
-        'apiKey': instance.key,
+        'apiKey': instance.polygon_account.key,
         'time': current_time,
         'problemId': instance.problem_id,
     }
@@ -239,22 +241,23 @@ def proceed_problem(prob_pk, created):
     instance.solution = solution
     Problem.objects.filter(pk=instance.pk).update(solution=solution)
 
-    lang = 'russian'
-    if not lang in statement['result']:
-        lang = 'english'
-
-    cur_statement = Statement(problem=instance, legend=statement['result'][lang]['legend'],
-                              input=statement['result'][lang]['input'],
-                              output=statement['result'][lang]['output'],
-                              notes=statement['result'][lang]['notes'],
-                              name=statement['result'][lang]['name'], time_limit=info['result']['timeLimit'],
-                              memory_limit=info['result']['memoryLimit'],
-                              input_file=info['result']['inputFile'], output_file=info['result']['outputFile'])
+    lang = 'english' if 'english' in statement else 'russian'
+    if lang in statement:
+        cur_statement = Statement(problem=instance, legend=statement[lang]['legend'],
+                                  input=statement[lang]['input'],
+                                  output=statement[lang]['output'],
+                                  notes=statement[lang]['notes'],
+                                  name=statement[lang]['name'], time_limit=info['timeLimit'],
+                                  memory_limit=info['memoryLimit'],
+                                  input_file=info['inputFile'], output_file=info['outputFile'])
+    else:
+        cur_statement = Statement(problem=instance)
     cur_statement.save()
 
     create_tests(instance, params, current_time, tests, fullSubtask)
 
     invocation = instance.submission_set.create(source=solution, is_invocation=True)
+    Problem.objects.filter(pk=instance.pk).update(invocation_pk=invocation.pk)
     evaluate_submission(invocation.pk)
     invocation.refresh_from_db()
 

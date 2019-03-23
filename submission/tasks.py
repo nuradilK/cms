@@ -126,5 +126,5 @@ def evaluate_submission(sub_pk):
     sub.save()
     if not sub.is_invocation:
         participant.score += participant.submission_set.filter(problem=sub.problem).order_by('-points').first().points
-    participant.save()
+        participant.save()
     sandbox.cleanup()

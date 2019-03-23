@@ -1,0 +1,10 @@
+{% extends 'admin/change_form.html' %}
+
+{% block submit_buttons_bottom %}
+    {% if show_reload_button %}
+        <div class="submit-row">
+            <input type="submit" value="Reload from Polygon" name="_reload">
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

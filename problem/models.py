@@ -1,8 +1,20 @@
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.contrib.auth.models import User
 
 from contest.models import Contest
+
+
+class PolygonAccount(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    key = models.CharField(max_length=100)
+    secret = models.CharField(max_length=100)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
 class Problem(models.Model):
@@ -11,14 +23,16 @@ class Problem(models.Model):
         READY = 1
         FAILED = 2
 
-    problem_id = models.CharField(default='', max_length=20)
-    key = models.CharField(max_length=100)
-    secret = models.CharField(max_length=100)
+    problem_id = models.CharField(max_length=20, blank=True)
+    name = models.CharField(max_length=100, unique=True)
     testset_name = models.CharField(max_length=100, default="tests")
-    contest = models.ManyToManyField(Contest, blank=True)
     checker = models.TextField(blank=True)
     solution = models.TextField(blank=True)
     status = models.SmallIntegerField(default=STATUS.IN_PROCESS)
+    invocation_pk = models.CharField(max_length=100, blank=True)
+
+    polygon_account = models.ForeignKey(PolygonAccount, on_delete=None)
+    contest = models.ManyToManyField(Contest, blank=True)
 
     def __str__(self):
         if hasattr(self, 'statement'):
@@ -65,26 +79,26 @@ class Test(models.Model):
 
 
 class Statement(models.Model):
-    legend = models.TextField()
-    input = models.TextField()
-    output = models.TextField()
-    notes = models.TextField()
-    name = models.CharField(max_length=100)
-    time_limit = models.IntegerField()
-    memory_limit = models.IntegerField()
-    input_file = models.CharField(max_length=100)
-    output_file = models.CharField(max_length=100)
+    legend = models.TextField(blank=True)
+    input = models.TextField(blank=True)
+    output = models.TextField(blank=True)
+    notes = models.TextField(blank=True)
+    name = models.CharField(max_length=100, blank=True)
+    time_limit = models.IntegerField(blank=True)
+    memory_limit = models.IntegerField(blank=True)
+    input_file = models.CharField(max_length=100, blank=True)
+    output_file = models.CharField(max_length=100, blank=True)
 
     problem = models.OneToOneField(Problem, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
         return str(self.name)
 
-from .tasks import proceed_problem
+
+from .tasks import process_problem as process_problem_task
 
 
 @receiver(post_save, sender=Problem)
-def get_problem_data(sender, instance, created, **kwargs):
-    Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.IN_PROCESS)
-    proceed_problem.delay(instance.pk, created)
-
+def process_problem(sender, instance, created, **kwargs):
+    if created:
+        process_problem_task.delay(instance.pk)
