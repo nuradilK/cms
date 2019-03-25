@@ -1,14 +1,15 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import reverse
-from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 
-from .models import Problem, Test, Statement, PolygonAccount
+from .models import Problem, Test, Statement, PolygonAccount, Subtask
 from .tasks import process_problem
 
+import nested_admin
 
-class TestInline(admin.TabularInline):
+
+class TestInline(nested_admin.NestedTabularInline):
     model = Test
     fields = ['test_id', 'get_short_input', 'get_short_output', 'in_statement', 'get_view_link', 'get_verdict']
     readonly_fields = ['test_id', 'get_short_input', 'get_short_output', 'in_statement', 'get_view_link', 'get_verdict']
@@ -52,10 +53,30 @@ class TestInline(admin.TabularInline):
         return False
 
 
-class StatementInline(admin.StackedInline):
+class SubtaskInline(nested_admin.NestedStackedInline):
+    model = Subtask
+    inlines = [TestInline]
+    classes = ['collapse']
+
+    fields = ['description', 'score']
+    readonly_fields = ['description', 'score']
+
+    def has_add_permission(self, request, obj):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+class StatementInline(nested_admin.NestedStackedInline):
     model = Statement
     fields = ['name', 'time_limit', 'memory_limit', 'input_file', 'output_file', 'legend', 'input', 'output',
               'notes']
+    readonly_fields = ['name', 'time_limit', 'memory_limit', 'input_file', 'output_file', 'legend', 'input', 'output',
+                       'notes']
     classes = ['collapse']
 
     def has_add_permission(self, request, obj):
@@ -68,7 +89,7 @@ class StatementInline(admin.StackedInline):
         return False
 
 
-class ProblemAdmin(admin.ModelAdmin):
+class ProblemAdmin(nested_admin.NestedModelAdmin):
     list_display = ('problem_id', 'name', 'get_status_message')
     readonly_fields = ['get_status_message', 'get_checker', 'get_solution']
 
@@ -93,7 +114,7 @@ class ProblemAdmin(admin.ModelAdmin):
 
     def get_inline_instances(self, request, problem=None):
         if problem is not None:
-            self.inlines = [TestInline]
+            self.inlines = [SubtaskInline]
             if hasattr(problem, 'statement'):
                 self.inlines.insert(0, StatementInline)
 
@@ -121,18 +142,20 @@ class ProblemAdmin(admin.ModelAdmin):
 
     def get_checker(self, problem=None):
         if problem.pk:
-            return mark_safe('<pre>%s</pre>' % problem.checker)
+            # TODO fix code rendering issue
+            return mark_safe('<pre><code>%s</code></pre>' % problem.checker)
         return 'N/A'
     get_checker.short_description = 'Source'
 
     def get_solution(self, problem=None):
         if problem.pk:
-            return mark_safe('<pre>%s</pre>' % problem.solution)
+            # TODO fix code rendering issue
+            return mark_safe('<pre><code>%s</code></pre>' % problem.solution)
         return 'N/A'
     get_solution.short_description = 'Source'
 
 
-class TestAdmin(admin.ModelAdmin):
+class TestAdmin(nested_admin.NestedModelAdmin):
     fields = ['test_id', 'in_statement', 'input', 'output']
     readonly_fields = ['test_id', 'input', 'output', 'in_statement']
 
@@ -140,12 +163,18 @@ class TestAdmin(admin.ModelAdmin):
         return False
 
 
-class StatementAdmin(admin.ModelAdmin):
+class SubtaskAdmin(nested_admin.NestedModelAdmin):
+    def has_module_permission(self, request):
+        return False
+
+
+class StatementAdmin(nested_admin.NestedModelAdmin):
     def has_module_permission(self, request):
         return False
 
 
 admin.site.register(Problem, ProblemAdmin)
 admin.site.register(Test, TestAdmin)
+admin.site.register(Subtask, SubtaskAdmin)
 admin.site.register(Statement, StatementAdmin)
 admin.site.register(PolygonAccount)
