@@ -1,6 +1,6 @@
-codes = {}
+sources = {
 
-codes['std::rcmp4.cpp'] = '''
+    'std::rcmp4.cpp': '''
 #include "testlib.h"
 #include <cmath>
 using namespace std;
@@ -36,9 +36,9 @@ int main(int argc, char * argv[])
         quitf(_ok, "found '%.5lf', expected '%.5lf', error '%.5lf'", p, j, doubleDelta(j, p));
     quitf(_ok, "%d numbers", n);
 }
-'''
+''',
 
-codes['std::wcmp.cpp'] = '''
+    'std::wcmp.cpp': '''
 #include "testlib.h"
 using namespace std;
 string ending(int x)
@@ -73,9 +73,9 @@ int main(int argc, char * argv[])
         quitf(_ok, "%s", strAnswer.c_str());
     quitf(_ok, "%d words", n);
 }
-'''
+''',
 
-codes['std::fcmp.cpp'] = '''
+    'std::fcmp.cpp': '''
 #include "testlib.h"
 #include <string>
 #include <vector>
@@ -117,9 +117,9 @@ int main(int argc, char * argv[])
         quitf(_ok, "%s", strAnswer.c_str());
     quitf(_ok, "%d lines", n);
 }
-'''
+''',
 
-codes['std::rcmp6.cpp'] = '''
+    'std::rcmp6.cpp': '''
 #include "testlib.h"
 #include <cmath>
 using namespace std;
@@ -155,9 +155,9 @@ int main(int argc, char * argv[])
         quitf(_ok, "found '%.7lf', expected '%.7lf', error '%.7lf'", p, j, doubleDelta(j, p));
     quitf(_ok, "%d numbers", n);
 }
-'''
+''',
 
-codes['std::ncmp.cpp'] = '''
+    'std::ncmp.cpp': '''
 #include "testlib.h"
 #include <sstream>
 
@@ -215,9 +215,9 @@ int main(int argc, char * argv[])
     else
         quitf(_ok, "%d numbers", n);
 }
-'''
+''',
 
-codes['std::hcmp.cpp'] = '''
+    'std::hcmp.cpp': '''
 #include "testlib.h"
 #include <string>
 using namespace std;
@@ -261,9 +261,9 @@ int main(int argc, char * argv[])
 
     quitf(_ok, "answer is %s", part(ja).c_str());
 }	
-'''
+''',
 
-codes['std::yesno.cpp'] = '''
+    'std::yesno.cpp': '''
 #include "testlib.h"
 std::string upper(std::string sa)
 {
@@ -286,9 +286,9 @@ int main(int argc, char * argv[])
         quitf(_wa, "expected %s, found %s", ja.c_str(), pa.c_str());
     quitf(_ok, "answer is %s", ja.c_str());
 }
-'''
+''',
 
-codes['std::rcmp9.cpp'] = '''
+    'std::rcmp9.cpp': '''
 #include "testlib.h"
 #include <cmath>
 using namespace std;
@@ -324,9 +324,9 @@ int main(int argc, char * argv[])
         quitf(_ok, "found '%.10lf', expected '%.10lf', error '%.10lf'", p, j, doubleDelta(j, p));
     quitf(_ok, "%d numbers", n);
 }
-'''
+''',
 
-codes['std::lcmp.cpp'] = '''
+    'std::lcmp.cpp': '''
 #include "testlib.h"
 #include <string>
 #include <vector>
@@ -384,4 +384,5 @@ int main(int argc, char * argv[])
 
     quitf(_ok, "%d lines", n);
 }
-'''
+''',
+}

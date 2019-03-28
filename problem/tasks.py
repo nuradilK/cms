@@ -3,6 +3,7 @@ import time
 import hashlib
 import string
 import random
+import traceback
 
 from os.path import join as path_join
 from celery import shared_task
@@ -10,18 +11,12 @@ from billiard import current_process
 from sandbox.sandbox_manager import Sandbox
 
 from .models import Statement, Test, Problem, Subtask
-from .std_checkers import codes
+from .std_checkers import sources as std_checkers
 
 from submission.models import Submission, RunInfo
 from submission.tasks import evaluate_submission
 
 api_url = "https://polygon.codeforces.com/api/"
-
-
-def param_config(params):
-    for key in list(params.keys()):
-        if key not in ['apiKey', 'apiSig', 'time', 'problemId']:
-            params.pop(key, None)
 
 
 def gen_hash():
@@ -32,7 +27,8 @@ def api_sig(method, secret, add):
     api_hash = gen_hash()
     signature = api_hash + '/' + method
     started = False
-    for key, value in add:
+    for key in sorted(add):
+        value = add[key]
         if started is False:
             signature = signature + '?'
         else:
@@ -43,71 +39,36 @@ def api_sig(method, secret, add):
     return api_hash + hashlib.sha512(str(signature).encode('utf-8')).hexdigest()
 
 
-def get_statement(params, instance, current_time):
-    param_config(params)
-    method = 'problem.statements'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
-                 ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-    return requests.get(api_url + method, params).json()['result']
+def problem_api_request(method, instance, extra_params=None, is_source_file=False):
+    method = 'problem.' + method
+    current_time = str(int(time.time()))
+    extra_params = extra_params or {}
+    params = {
+        'apiKey': instance.polygon_account.key,
+        'time': current_time,
+        'problemId': instance.problem_id,
+    }
+    params = {**params, **extra_params}
+    params['apiSig'] = api_sig(method, instance.polygon_account.secret, params)
+
+    resp = requests.get(api_url + method, params)
+
+    if resp.status_code != 200:
+        raise Exception('API request error. Polygon can be unavailable.')
+
+    if not is_source_file:
+        result = resp.json()
+        if result['status'] == 'FAILED':
+            raise Exception(result['comment'])
+        result = result['result']
+    else:
+        result = resp.content.decode('utf-8')
+
+    return result
 
 
-def get_info(params, instance, current_time):
-    param_config(params)
-    method = 'problem.info'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
-                 ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-    return requests.get(api_url + method, params).json()['result']
-
-
-def get_test(params, instance, current_time):
-    param_config(params)
-    method = 'problem.tests'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
-                 ('testset', instance.testset_name), ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-    params['testset'] = instance.testset_name
-    return requests.get(api_url + method, params).json()
-
-
-def get_name(params, instance, current_time):
-    param_config(params)
-    method = 'problem.checker'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
-                 ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-    return requests.get(api_url + method, params).json()['result']
-
-
-def get_file(params, instance, current_time, name):
-    param_config(params)
-    method = 'problem.viewFile'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('name', name), ('problemId', str(instance.problem_id)),
-                 ('time', current_time), ('type', 'source')]
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-    params['name'] = name
-    params['type'] = 'source'
-    return requests.get(api_url + method, params).content.decode('utf-8')
-
-
-def get_files_list(params, instance, current_time):
-    param_config(params)
-    method = 'problem.files'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
-                 ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-    return requests.get(api_url + method, params).json()
-
-
-def get_solution_name(params, instance, current_time):
-    param_config(params)
-    method = 'problem.solutions'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('problemId', str(instance.problem_id)),
-                 ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-
-    solution_list = requests.get(api_url + method, params).json()['result']
+def get_solution_name(instance):
+    solution_list = problem_api_request('solutions', instance)
     main_solution = None
     correct_solution = None
     for solution in solution_list:
@@ -121,35 +82,12 @@ def get_solution_name(params, instance, current_time):
     return main_solution['name']
 
 
-def get_solution_source(params, instance, current_time, solution_name):
-    param_config(params)
-    method = 'problem.viewSolution'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('name', solution_name), ('problemId', str(instance.problem_id)),
-                 ('time', current_time)]
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-    params['name'] = solution_name
-
-    return requests.get(api_url + method, params).content.decode('utf-8')
+def manual_test(instance, test, full_subtask):
+    instance.test_set.create(input=test['input'], test_id=test['index'], in_statement=test['useInStatements'],
+                             subtask=full_subtask)
 
 
-def generator_code(params, instance, current_time, script_line):
-    param_config(params)
-    name = script_line.split()[0] + '.cpp'
-    method = 'problem.viewFile'
-    my_params = [('apiKey', str(instance.polygon_account.key)), ('name', name), ('problemId', str(instance.problem_id)),
-                 ('time', current_time), ('type', 'source')]
-    params['type'] = 'source'
-    params['name'] = name
-    params['apiSig'] = api_sig(method, instance.polygon_account.secret, my_params)
-    gen_code = requests.get(api_url + method, params).text
-    return gen_code
-
-
-def manual_test(instance, test, fullSubtask):
-    instance.test_set.create(input=test['input'], test_id=test['index'], in_statement=test['useInStatements'], subtask=fullSubtask)
-
-
-def script_test(instance, script_line, gen_source, gen_name, test, fullSubtask):
+def script_test(instance, script_line, gen_source, gen_name, test, full_subtask):
     sandbox = Sandbox()
     sandbox.init(current_process().index)
 
@@ -168,18 +106,66 @@ def script_test(instance, script_line, gen_source, gen_name, test, fullSubtask):
                                 meta_file=sandbox.get_box_dir('meta'),
                                 time_limit=10, memory_limit=128)
 
-    instance.test_set.create(input=out.decode('utf-8'), test_id=test['index'], in_statement=test['useInStatements'], subtask=fullSubtask)
+    instance.test_set.create(input=out.decode('utf-8'), test_id=test['index'], in_statement=test['useInStatements'],
+                             subtask=full_subtask)
     sandbox.cleanup()
 
 
-def create_tests(instance, params, current_time, tests, fullSubtask):
-    for test in tests['result']:
+def create_tests(instance, tests, full_subtask):
+    for test in tests:
         if test['manual'] is True:
-            manual_test(instance, test, fullSubtask)
+            manual_test(instance, test, full_subtask)
         else:
-            script_test(instance, test['scriptLine'],
-                        generator_code(params, instance, current_time, test['scriptLine']),
-                        test['scriptLine'].split()[0], test, fullSubtask)
+            try:
+                generator_source = problem_api_request('viewFile', instance, is_source_file=True, extra_params={
+                    'name': test['scriptLine'].split()[0] + '.cpp',
+                    'type': 'source',
+                })
+            except Exception as e:
+                fail_problem_processing(instance, e=e, message='Error loading generator for test ' + str(test.test_id))
+                return
+            script_test(instance, test['scriptLine'], generator_source,
+                        test['scriptLine'].split()[0], test, full_subtask)
+
+
+def get_checker_source(instance):
+    # TODO Fix for the case when custom checker has the same name as a standard one
+    checker_name = problem_api_request('checker', instance)
+    checker_source = None
+    for name, source in std_checkers.items():
+        if name == checker_name:
+            checker_source = source
+
+    if checker_source is None:
+        checker_source = problem_api_request('viewFile', instance, is_source_file=True, extra_params={
+            'name': checker_name,
+            'type': 'source',
+        })
+
+    return checker_source
+
+
+def fail_problem_processing(instance, e=None, message=None):
+    if message:
+        print(str(message))
+    if e:
+        print(traceback.format_exc())
+    Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.FAILED)
+
+
+def clear_problem(instance):
+    if hasattr(instance, 'statement'):
+        instance.statement.delete()
+    if hasattr(instance, 'test_set'):
+        instance.test_set.all().delete()
+    if hasattr(instance, 'subtask_set'):
+        instance.subtask_set.all().delete()
+    instance.checker = ''
+    instance.solution = ''
+    instance.invocation_pk = ''
+
+    Problem.objects.filter(pk=instance.pk).update(checker='', solution='', invocation_pk='')
+    return instance
 
 
 @shared_task
@@ -194,68 +180,44 @@ def process_problem(prob_pk):
 
     Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.IN_PROCESS)
 
-    if hasattr(instance, 'statement'):
-        instance.statement.delete()
-    if hasattr(instance, 'test_set'):
-        instance.test_set.all().delete()
+    instance = clear_problem(instance)
 
-    current_time = str(int(time.time()))
-    params = {
-        'apiKey': instance.polygon_account.key,
-        'time': current_time,
-        'problemId': instance.problem_id,
-    }
-    fullSubtask = Subtask(problem=Problem.objects.get(pk=instance.pk), description='Full Subtask')
-    fullSubtask.save()
+    # Loading data from Polygon
     try:
-        statement = get_statement(params, instance, current_time)
-        info = get_info(params, instance, current_time)
-        checker_name = get_name(params, instance, current_time)
-        solution_name = get_solution_name(params, instance, current_time)
-        solution = get_solution_source(params, instance, current_time, solution_name)
-        tests = get_test(params, instance, current_time)
+        statement = problem_api_request('statements', instance)
+        info = problem_api_request('info', instance)
+        checker = get_checker_source(instance)
+        solution_name = get_solution_name(instance)
+        solution = problem_api_request('viewSolution', instance, is_source_file=True,
+                                       extra_params={'name': solution_name})
+        tests = problem_api_request('tests', instance, extra_params={'testset': instance.testset_name})
     except Exception as e:
-        print(e)
-        Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.FAILED)
+        fail_problem_processing(instance, e=e, message='Error loading problem data')
         return
 
-    have = False
-    for key in codes:
-        if key == checker_name:
-            have = True
-
-    # TODO Fix for the case when custom checker has the same name as a standard one
-    if not have:
-        try:
-            checker = get_file(params, instance, current_time, checker_name)
-        except Exception as e:
-            print(e)
-            Problem.objects.filter(pk=instance.pk).update(status=Problem.STATUS.FAILED)
-            return
-    else:
-        checker = codes[checker_name]
-
-    instance.checker = checker
-    Problem.objects.filter(pk=instance.pk).update(checker=checker)
-
-    instance.solution = solution
-    Problem.objects.filter(pk=instance.pk).update(solution=solution)
-
+    # Processing data
     lang = 'english' if 'english' in statement else 'russian'
     if lang in statement:
-        cur_statement = Statement(problem=instance, legend=statement[lang]['legend'],
-                                  input=statement[lang]['input'],
-                                  output=statement[lang]['output'],
-                                  notes=statement[lang]['notes'],
-                                  name=statement[lang]['name'], time_limit=info['timeLimit'],
-                                  memory_limit=info['memoryLimit'],
-                                  input_file=info['inputFile'], output_file=info['outputFile'])
+        statement = statement[lang]
+        Statement.objects.create(problem=instance, legend=statement['legend'],
+                                 input=statement['input'],
+                                 output=statement['output'],
+                                 notes=statement['notes'],
+                                 name=statement['name'], time_limit=info['timeLimit'],
+                                 memory_limit=info['memoryLimit'],
+                                 input_file=info['inputFile'], output_file=info['outputFile'])
     else:
-        cur_statement = Statement(problem=instance)
-    cur_statement.save()
+        Statement.objects.create(problem=instance)
 
-    create_tests(instance, params, current_time, tests, fullSubtask)
+    Problem.objects.filter(pk=instance.pk).update(checker=checker)
+    Problem.objects.filter(pk=instance.pk).update(solution=solution)
 
+    full_subtask = Subtask(problem=Problem.objects.get(pk=instance.pk), description='Full Subtask')
+    full_subtask.save()
+
+    create_tests(instance, tests, full_subtask)
+
+    # Generating output for tests
     invocation = instance.submission_set.create(source=solution, is_invocation=True)
     Problem.objects.filter(pk=instance.pk).update(invocation_pk=invocation.pk)
     evaluate_submission(invocation.pk)

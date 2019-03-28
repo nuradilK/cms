@@ -46,22 +46,26 @@ class Problem(models.Model):
         if self.status == Problem.STATUS.READY:
             return 'Ready'
         return 'Failed'
+
     get_status_message.short_description = 'Status'
 
     def get_title(self):
         if hasattr(self, 'statement'):
             return str(self.statement.name)
         return 'N/A'
+
     get_title.short_description = 'Title'
+
 
 class Subtask(models.Model):
     subtask_id = models.AutoField(primary_key=True)
     score = models.IntegerField(default=0)
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
     description = models.CharField(max_length=100)
-    
+
     def __str__(self):
         return self.description
+
 
 class Test(models.Model):
     input = models.TextField()

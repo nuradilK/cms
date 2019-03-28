@@ -27,6 +27,7 @@ def run_solution(sandbox, name, problem_info, test):
                      stdin_file=str(problem_info.input_file), stdout_file=str(problem_info.output_file),
                      time_limit=problem_info.time_limit, memory_limit=problem_info.memory_limit)
 
+
 @shared_task
 def evaluate_submission(sub_pk):
     """ Evaluate or re-evaluate submission """
@@ -67,7 +68,8 @@ def evaluate_submission(sub_pk):
     if not sub.is_invocation:
         participant = sub.participant
         if participant.submission_set.filter(problem=sub.problem).order_by('-points'):
-            participant.score -= participant.submission_set.filter(problem=sub.problem).order_by('-points').first().points
+            participant.score -= participant.submission_set.filter(problem=sub.problem).order_by(
+                '-points').first().points
     for subtask in sub.problem.subtask_set.order_by('subtask_id'):
         cur_score = subtask.score
         for test in subtask.test_set.order_by('test_id'):
@@ -94,9 +96,9 @@ def evaluate_submission(sub_pk):
                     ans_file = 'test.a'
                     sandbox.create_file(ans_file, str(test.output), is_public=0)
                     out, err, code = sandbox.run_cmd('./check ' +
-                                                    path_join('.', 'box', str(problem_info.input_file)) + ' ' +
-                                                    path_join('.', 'box', str(problem_info.output_file)) + ' ' +
-                                                    path_join('.', ans_file), with_code=True)
+                                                     path_join('.', 'box', str(problem_info.input_file)) + ' ' +
+                                                     path_join('.', 'box', str(problem_info.output_file)) + ' ' +
+                                                     path_join('.', ans_file), with_code=True)
                     if code == 0:
                         run_info.status = RunInfo.STATUS.OK
                     elif code == 1:

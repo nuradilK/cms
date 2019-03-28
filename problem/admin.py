@@ -14,7 +14,7 @@ class TestInline(nested_admin.NestedTabularInline):
     fields = ['test_id', 'get_short_input', 'get_short_output', 'in_statement', 'get_view_link', 'get_verdict']
     readonly_fields = ['test_id', 'get_short_input', 'get_short_output', 'in_statement', 'get_view_link', 'get_verdict']
     classes = ['collapse']
-    ordering = ['test_id', 'in_statement']
+    ordering = ['test_id']
 
     def get_view_link(self, test=None):
         view_link = '<a href="%s" target="popup">View</a>' % reverse('admin:problem_test_change', args=[test.pk])
@@ -92,6 +92,7 @@ class StatementInline(nested_admin.NestedStackedInline):
 class ProblemAdmin(nested_admin.NestedModelAdmin):
     list_display = ('problem_id', 'name', 'get_status_message')
     readonly_fields = ['get_status_message', 'get_checker', 'get_solution']
+    inlines = [StatementInline, SubtaskInline]
 
     def get_fieldsets(self, request, problem=None):
         if problem is None:
@@ -113,12 +114,10 @@ class ProblemAdmin(nested_admin.NestedModelAdmin):
         ]
 
     def get_inline_instances(self, request, problem=None):
-        if problem is not None:
-            self.inlines = [SubtaskInline]
-            if hasattr(problem, 'statement'):
-                self.inlines.insert(0, StatementInline)
-
-        return super().get_inline_instances(request, obj=problem)
+        inlines = super().get_inline_instances(request, problem)
+        if not problem:
+            inlines = []
+        return inlines
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
