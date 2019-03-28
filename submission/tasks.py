@@ -17,7 +17,6 @@ def get_meta(sandbox, meta_file):
         meta[key] = val
 
     return meta
-    # TODO finish get_meta
 
 
 def run_solution(sandbox, name, problem_info, test):
@@ -47,7 +46,6 @@ def evaluate_submission(sub_pk):
         sub.save()
         return
 
-    # TODO FINISH Testing
     sub.status = Submission.STATUS.TESTING
     sub.save()
 
@@ -127,6 +125,6 @@ def evaluate_submission(sub_pk):
     sub.status = Submission.STATUS.FINISHED
     sub.save()
     if not sub.is_invocation:
-        participant.score += participant.submission_set.filter(problem=sub.problem).order_by('-points').first().points
+        participant.score = participant.submission_set.filter(problem=sub.problem).order_by('-points').first().points
         participant.save()
     sandbox.cleanup()

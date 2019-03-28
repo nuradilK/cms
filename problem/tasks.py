@@ -129,7 +129,6 @@ def create_tests(instance, tests, full_subtask):
 
 
 def get_checker_source(instance):
-    # TODO Fix for the case when custom checker has the same name as a standard one
     checker_name = problem_api_request('checker', instance)
     checker_source = None
     for name, source in std_checkers.items():
