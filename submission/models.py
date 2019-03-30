@@ -1,7 +1,7 @@
 from django.db import models
 
 from contest.models import Contest, Participant
-from problem.models import Problem, Test
+from problem.models import Problem, ProblemInfo, Test
 
 
 class Submission(models.Model):
@@ -22,10 +22,13 @@ class Submission(models.Model):
         ]
 
     class LANGUAGE:
-        CPP17 = 0
+        CPP11 = 0
+        DESC = [
+            "GNU C++11"
+        ]
 
     source = models.TextField(blank=True)
-    language = models.SmallIntegerField(default=LANGUAGE.CPP17)
+    language = models.SmallIntegerField(default=LANGUAGE.CPP11)
     status = models.SmallIntegerField(default=STATUS.IN_QUEUE)
     current_test = models.IntegerField(default=0)
     is_invocation = models.BooleanField(default=False)
@@ -35,6 +38,7 @@ class Submission(models.Model):
 
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True)
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, null=True)
+    problem_info = models.ForeignKey(ProblemInfo, on_delete=models.SET_NULL, null=True)
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -42,6 +46,11 @@ class Submission(models.Model):
 
     def message(self):
         return Submission.STATUS.DESC[self.status]
+    message.short_description = 'Status'
+
+    def get_language_description(self):
+        return Submission.LANGUAGE.DESC[self.language]
+    get_language_description.short_description = 'Lang'
 
     def invocation_message(self):
         if self.status != Submission.STATUS.FINISHED:
@@ -81,6 +90,7 @@ class RunInfo(models.Model):
 
     status = models.SmallIntegerField(default=STATUS.NA)
     time = models.FloatField(default=0.0)
+    output = models.TextField(blank=True)
 
     def __str__(self):
         return str(self.submission.pk) + '-' + str(self.test.test_id)

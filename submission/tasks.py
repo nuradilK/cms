@@ -19,12 +19,20 @@ def get_meta(sandbox, meta_file):
     return meta
 
 
-def run_solution(sandbox, name, problem_info, test):
-    sandbox.create_file(str(problem_info.input_file), str(test.input), file_dir='box')
-    sandbox.create_file(str(problem_info.output_file), '', file_dir='box')
+def run_solution(sandbox, name, problem_constraints, test):
+    sandbox.create_file(str(problem_constraints.input_file), str(test.input), file_dir='box')
+    sandbox.create_file(str(problem_constraints.output_file), '', file_dir='box')
     sandbox.run_exec(name, dirs=[('/box', 'box', 'rw')], meta_file=sandbox.get_box_dir('meta'),
-                     stdin_file=str(problem_info.input_file), stdout_file=str(problem_info.output_file),
-                     time_limit=problem_info.time_limit, memory_limit=problem_info.memory_limit)
+                     stdin_file=str(problem_constraints.input_file), stdout_file=str(problem_constraints.output_file),
+                     time_limit=problem_constraints.time_limit, memory_limit=problem_constraints.memory_limit)
+
+
+def clear_submission(sub):
+    if hasattr(sub, 'runinfo_set'):
+        sub.runinfo_set.all().delete()
+    sub.points = 0
+    sub.current_test = 0
+    Submission.objects.filter(pk=sub.pk).update(points=0, current_test=0)
 
 
 @shared_task
@@ -32,6 +40,9 @@ def evaluate_submission(sub_pk):
     """ Evaluate or re-evaluate submission """
 
     sub = Submission.objects.get(pk=sub_pk)
+
+    clear_submission(sub)
+
     sandbox = Sandbox()
     sandbox.init(current_process().index)
 
@@ -62,19 +73,19 @@ def evaluate_submission(sub_pk):
         sub.save()
         return
 
-    problem_info = sub.problem.statement
+    problem_constraints = sub.problem.statement
     if not sub.is_invocation:
         participant = sub.participant
         if participant.submission_set.filter(problem=sub.problem).order_by('-points'):
-            participant.score -= participant.submission_set.filter(problem=sub.problem).order_by(
+            participant.points -= participant.submission_set.filter(problem=sub.problem).order_by(
                 '-points').first().points
     for subtask in sub.problem.subtask_set.order_by('subtask_id'):
-        cur_score = subtask.score
+        cur_points = subtask.points
         for test in subtask.test_set.order_by('test_id'):
             sub.current_test = test.test_id
             sub.save()
 
-            run_solution(sandbox, 'main', problem_info, test)
+            run_solution(sandbox, 'main', problem_constraints, test)
 
             meta = get_meta(sandbox, 'meta')
 
@@ -85,17 +96,18 @@ def evaluate_submission(sub_pk):
                 run_info = sub.runinfo_set.create(test=test)
 
             if 'status' not in meta:
+                run_info.output = sandbox.get_file(path_join('box', problem_constraints.output_file))
                 if sub.is_invocation:
                     run_info.status = RunInfo.STATUS.OK
                     run_info.time = float(meta['time'])
-                    test.output = sandbox.get_file(path_join('box', problem_info.output_file))
+                    test.output = run_info.output
                     test.save()
                 else:
                     ans_file = 'test.a'
                     sandbox.create_file(ans_file, str(test.output), is_public=0)
                     out, err, code = sandbox.run_cmd('./check ' +
-                                                     path_join('.', 'box', str(problem_info.input_file)) + ' ' +
-                                                     path_join('.', 'box', str(problem_info.output_file)) + ' ' +
+                                                     path_join('.', 'box', str(problem_constraints.input_file)) + ' ' +
+                                                     path_join('.', 'box', str(problem_constraints.output_file)) + ' ' +
                                                      path_join('.', ans_file), with_code=True)
                     if code == 0:
                         run_info.status = RunInfo.STATUS.OK
@@ -111,20 +123,20 @@ def evaluate_submission(sub_pk):
                     run_info.status = RunInfo.STATUS.TL
                 else:
                     run_info.status = RunInfo.STATUS.WTL
-                run_info.time = float(problem_info.time_limit)
+                run_info.time = float(problem_constraints.time_limit)
             elif meta['status'] == 'SG' or meta['status'] == 'RE':
                 run_info.status = RunInfo.STATUS.RE
                 run_info.time = float(meta['time'])
             else:
                 run_info.status = RunInfo.STATUS.XX
             if run_info.status != RunInfo.STATUS.OK:
-                cur_score = 0
+                cur_points = 0
             run_info.save()
-        sub.points += cur_score
+        sub.points += cur_points
         sub.save()
     sub.status = Submission.STATUS.FINISHED
     sub.save()
     if not sub.is_invocation:
-        participant.score = participant.submission_set.filter(problem=sub.problem).order_by('-points').first().points
+        participant.points = participant.submission_set.filter(problem=sub.problem).order_by('-points').first().points
         participant.save()
     sandbox.cleanup()

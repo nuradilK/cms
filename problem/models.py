@@ -11,7 +11,7 @@ class PolygonAccount(models.Model):
     key = models.CharField(max_length=100)
     secret = models.CharField(max_length=100)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -23,7 +23,7 @@ class Problem(models.Model):
         READY = 1
         FAILED = 2
 
-    problem_id = models.CharField(max_length=20, blank=True)
+    problem_id = models.CharField(max_length=20, unique=True, blank=True)
     name = models.CharField(max_length=100, unique=True)
     testset_name = models.CharField(max_length=100, default="tests")
     checker = models.TextField(blank=True)
@@ -31,8 +31,8 @@ class Problem(models.Model):
     status = models.SmallIntegerField(default=STATUS.IN_PROCESS)
     invocation_pk = models.CharField(max_length=100, blank=True)
 
-    polygon_account = models.ForeignKey(PolygonAccount, on_delete=None)
-    contest = models.ManyToManyField(Contest, blank=True)
+    polygon_account = models.ForeignKey(PolygonAccount, null=True, on_delete=models.SET_NULL)
+    contests = models.ManyToManyField(Contest, through='ProblemInfo')
 
     def __str__(self):
         if hasattr(self, 'statement'):
@@ -57,9 +57,26 @@ class Problem(models.Model):
     get_title.short_description = 'Title'
 
 
+class ProblemInfo(models.Model):
+    short_name = models.CharField(max_length=20)
+
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '%s-%s' % (self.problem.problem_id, self.problem.name)
+
+    def get_problem_max_points(self):
+        max_points = 0
+        for subtask in self.problem.subtask_set.all():
+            max_points += subtask.points
+        return max_points
+    get_problem_max_points.short_description = 'Max. Points'
+
+
 class Subtask(models.Model):
     subtask_id = models.AutoField(primary_key=True)
-    score = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
     description = models.CharField(max_length=100)
 

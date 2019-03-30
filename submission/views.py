@@ -5,6 +5,8 @@ from django.utils import timezone
 from .models import Submission
 from .tasks import evaluate_submission
 from .forms import SubmitForm
+from problem.models import ProblemInfo
+from contest.models import Contest
 
 
 def submit(request, contest_pk):
@@ -17,6 +19,10 @@ def submit(request, contest_pk):
             sub = form.save(commit=False)
             sub.participant = request.user.participant_set.get(contest__pk=contest_pk)
             sub.sent_date = timezone.now()
+            problem_infos = ProblemInfo.objects.filter(problem=sub.problem, contest__pk=contest_pk)
+            if problem_infos:
+                sub.problem_info = problem_infos.first()
+            sub.contest = Contest.objects.get(pk=contest_pk)
             sub.save()
 
             evaluate_submission.delay(sub.pk)

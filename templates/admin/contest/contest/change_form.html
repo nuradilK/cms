@@ -1,0 +1,50 @@
+{% extends 'admin/change_form.html' %}
+
+{% block inline_field_sets %}
+    {% for inline_admin_formset in inline_admin_formsets %}
+        {% include inline_admin_formset.opts.template %}
+
+        {% if inline_admin_formset.formset.prefix == 'participant_set' %}
+            <fieldset class="module aligned collapse collapsed">
+                <h2>Add Participants</h2>
+                <div class="form-row field-add-participants">
+                    <div>
+                        <label for="">Select users:</label>
+
+                        <div class="related-widget-wrapper">
+                            <select name="users" id="id_user" multiple>
+                                {% for user in users %}
+                                    <option value="{{ user.pk }}">{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="help">Hold down "Control", or "Command" on a Mac, to select more than one.</div>
+                    </div>
+                </div>
+            </fieldset>
+        {% endif %}
+
+        {% if inline_admin_formset.formset.prefix == 'probleminfo_set' %}
+            <fieldset class="module aligned collapse collapsed">
+                <h2>Add Problems</h2>
+                <div class="form-row field-add-problems">
+                    <div>
+                        <label for="">Select problems:</label>
+
+                        <div class="related-widget-wrapper">
+                            <select name="problems" id="id_problem" multiple>
+                                {% for problem in problems %}
+                                    <option value="{{ problem.problem_id  }}">{{ problem.problem_id }}-{{ problem.name }}-{{ problem.statement.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="help">Hold down "Control", or "Command" on a Mac, to select more than one.</div>
+                    </div>
+                </div>
+            </fieldset>
+        {% endif %}
+
+    {% endfor %}
+{% endblock %}

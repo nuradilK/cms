@@ -58,8 +58,8 @@ class SubtaskInline(nested_admin.NestedStackedInline):
     inlines = [TestInline]
     classes = ['collapse']
 
-    fields = ['description', 'score']
-    readonly_fields = ['description', 'score']
+    fields = ['description', 'points']
+    readonly_fields = ['description', 'points']
 
     def has_add_permission(self, request, obj):
         return False
@@ -98,12 +98,12 @@ class ProblemAdmin(nested_admin.NestedModelAdmin):
         if problem is None:
             return [
                 (None, {
-                    'fields': ['name', 'problem_id', 'polygon_account', 'testset_name', 'contest'],
+                    'fields': ['name', 'problem_id', 'polygon_account', 'testset_name'],
                 }),
             ]
         return [
             (None, {
-                'fields': ['name', 'get_status_message', 'contest']
+                'fields': ['name', 'get_status_message']
             }),
             ('Polygon Info', {
                 'fields': ['problem_id', 'polygon_account', 'testset_name'],
@@ -123,7 +123,8 @@ class ProblemAdmin(nested_admin.NestedModelAdmin):
         extra_context = extra_context or {}
         extra_context['show_reload_button'] = True
         problem = Problem.objects.filter(pk=object_id)
-        if not problem or problem.first().status == Problem.STATUS.IN_PROCESS:
+        if not problem or problem.first().status == Problem.STATUS.IN_PROCESS \
+                or problem.first().polygon_account.user != request.user:
             extra_context['show_reload_button'] = False
         return super().change_view(request, object_id, form_url=form_url, extra_context=extra_context)
 
@@ -139,6 +140,13 @@ class ProblemAdmin(nested_admin.NestedModelAdmin):
         self.message_user(request, "Problem processing has started")
         return super().response_add(request, obj, post_url_continue=post_url_continue)
 
+    def render_change_form(self, request, context, *args, **kwargs):
+        if 'polygon_account' in context['adminform'].form.fields:
+            context['adminform'].form.fields['polygon_account'].queryset = PolygonAccount.objects.filter(
+                user=request.user
+            )
+        return super().render_change_form(request, context, *args, **kwargs)
+
     def get_checker(self, problem=None):
         if problem.pk:
             # TODO fix code rendering issue
@@ -153,6 +161,16 @@ class ProblemAdmin(nested_admin.NestedModelAdmin):
         return 'N/A'
     get_solution.short_description = 'Source'
 
+    def has_change_permission(self, request, problem=None):
+        if problem:
+            return problem.polygon_account.user == request.user
+        return True
+
+    def has_delete_permission(self, request, problem=None):
+        if problem:
+            return problem.polygon_account.user == request.user
+        return True
+
 
 class TestAdmin(nested_admin.NestedModelAdmin):
     fields = ['test_id', 'in_statement', 'input', 'output']
@@ -162,18 +180,34 @@ class TestAdmin(nested_admin.NestedModelAdmin):
         return False
 
 
-class SubtaskAdmin(nested_admin.NestedModelAdmin):
-    def has_module_permission(self, request):
-        return False
+class PolygonAccountAdmin(nested_admin.NestedModelAdmin):
+    fields = ['name', 'key', 'secret']
 
+    def get_queryset(self, request):
+        query_set = super().get_queryset(request)
+        return query_set.filter(user=request.user)
 
-class StatementAdmin(nested_admin.NestedModelAdmin):
-    def has_module_permission(self, request):
-        return False
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.user = request.user
+        obj.save()
+        return super().response_add(request, obj, post_url_continue=post_url_continue)
+
+    def response_change(self, request, obj):
+        obj.user = request.user
+        obj.save()
+        return super().response_change(request, obj)
+
+    def has_view_or_change_permission(self, request, polygon_account=None):
+        if polygon_account:
+            return polygon_account.user == request.user
+        return True
+
+    def has_view_permission(self, request, polygon_account=None):
+        if polygon_account:
+            return polygon_account.user == request.user
+        return True
 
 
 admin.site.register(Problem, ProblemAdmin)
 admin.site.register(Test, TestAdmin)
-admin.site.register(Subtask, SubtaskAdmin)
-admin.site.register(Statement, StatementAdmin)
-admin.site.register(PolygonAccount)
+admin.site.register(PolygonAccount, PolygonAccountAdmin)
