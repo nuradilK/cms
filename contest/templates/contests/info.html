@@ -1,5 +1,13 @@
-<h2>Hello {{ username }} </h2>
-<h1>Contest name: {{ contest.title }}</h1>
-<p>Started at {{ contest.start_time|date:"M d, h:m:s" }}</p>
-<p>Ends at {{ contest.end_time|date:"M d, h:m:s" }}</p>
-<p>Current time {{ current_time|date:"M d, h:m:s" }}</p>
+<h1>{{ contest.title }}</h1>
+
+{% if contest_state.0 == STATE.IN_PROGRESS %}
+    <h1>In progress. Time left: {{ contest_state.1 }}</h1>
+{% elif contest_state.0 == STATE.NOT_STARTED %}
+    <h1>Contest starts in: {{ contest_state.1 }}</h1>
+{% else %}
+    <h1>The contest is over.</h1>
+{% endif %}
+
+<p>Start Time: {{ contest.start_time|date:"M d, h:m:s" }}</p>
+<p>End Time: {{ contest.end_time|date:"M d, h:m:s" }}</p>
+<p>Current time: {{ current_time|date:"M d, h:m:s" }}</p>

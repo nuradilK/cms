@@ -121,7 +121,7 @@ class ContestAdmin(nested_admin.NestedModelAdmin):
                 problem = Problem.objects.get(problem_id=problem_id)
                 if not ProblemInfo.objects.filter(contest=contest, problem=problem):
                     ProblemInfo.objects.create(contest=contest, problem=problem,
-                                               short_name=contest.get_problem_short_name())
+                                               short_name=contest.generate_problem_short_name())
 
         return redirect('.')
 
