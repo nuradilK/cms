@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime, timezone
 from .models import Contest, Participant
 
+
 def active(contest, cur_time):
     if not contest.is_active:
         return False
@@ -15,6 +16,7 @@ def active(contest, cur_time):
     if diff.total_seconds() <= 0:
         return False
     return True
+
 
 @login_required(redirect_field_name='login-page')
 def info(request, contest_pk=1):
@@ -29,6 +31,7 @@ def info(request, contest_pk=1):
         'current_time': datetime.now(timezone.utc),
     }
     return render(request, 'contests/info.html', context)
+
 
 def login_page(request):
     context = {}
@@ -63,7 +66,10 @@ def logout_page(request):
 
 def ranking(request, contest_pk):
     cur_contest = get_object_or_404(Contest, pk=contest_pk)
-    participants = list(Participant.objects.filter(contest__title=cur_contest.title).order_by('-score'))
+    participants = list(Participant.objects.filter(contest__title=cur_contest.title).order_by(
+        '-points',
+        'user__username'
+    ))
     context = {
         'participants': participants,
     }
